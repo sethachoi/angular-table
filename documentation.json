@@ -246,30 +246,96 @@
         },
         {
             "name": "NgTableComponent",
-            "id": "component-NgTableComponent-6608e80974d18e003ac6e4abe70151fa",
+            "id": "component-NgTableComponent-2f414776a91c7cfd570e82d1c513e7f2",
             "file": "projects/ng-table/src/lib/ng-table.component.ts",
             "encapsulation": [],
             "entryComponents": [],
             "inputs": [],
             "outputs": [],
             "providers": [],
-            "selector": "ui-ngTable",
-            "styleUrls": [],
+            "selector": "ui-ng-table",
+            "styleUrls": [
+                "./ng-table.component.scss"
+            ],
             "styles": [],
-            "template": "<p>\n  ng-table works!\n</p>\n",
-            "templateUrl": [],
+            "templateUrl": [
+                "./ng-table.component.html"
+            ],
             "viewProviders": [],
             "inputsClass": [],
             "outputsClass": [],
-            "propertiesClass": [],
+            "propertiesClass": [
+                {
+                    "name": "colDefs",
+                    "defaultValue": "[{\n    key: 'name',\n    label: 'Name'\n  }, {\n    key: 'title',\n    label: 'Title'\n  }, {\n    key: 'age',\n    label: 'Age'\n  }, {\n    key: 'hair',\n    label: 'Hair Color'\n  }]",
+                    "type": "[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 44
+                },
+                {
+                    "name": "items",
+                    "defaultValue": "[{\n    id: 1,\n    name: 'Bob Bobson',\n    title: 'Asst Regional Mgr',\n    age: 35,\n    hair: 'black'\n  }, {\n    id: 2,\n    name: 'Paul Paulson',\n    title: 'Office Mgr',\n    age: 30,\n    hair: 'brown'\n  }, {\n    id: 3,\n    name: 'Ann Annington',\n    title: 'Sr Engineer',\n    age: 27,\n    hair: 'purple'\n  }, {\n    id: 4,\n    name: 'Richard Richardson',\n    title: 'Sr Engineer',\n    age: 28,\n    hair: 'blonde'\n  }, {\n    id: 5,\n    name: 'Juliet Juliets',\n    title: 'Dog Enthusiast',\n    age: 22,\n    hair: 'orange'\n  }]",
+                    "type": "[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 12
+                },
+                {
+                    "name": "sortBy",
+                    "defaultValue": "() => {...}",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 64
+                },
+                {
+                    "name": "sortData",
+                    "defaultValue": "() => {...}",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 90
+                },
+                {
+                    "name": "sortRule",
+                    "defaultValue": "{ key: 'id', direction: 'asc' }",
+                    "type": "object",
+                    "optional": false,
+                    "description": "",
+                    "line": 10
+                }
+            ],
             "methodsClass": [
+                {
+                    "name": "drop",
+                    "args": [
+                        {
+                            "name": "event",
+                            "type": "CdkDragDrop<any[]>"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 97,
+                    "jsdoctags": [
+                        {
+                            "name": "event",
+                            "type": "CdkDragDrop<any[]>",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
                 {
                     "name": "ngOnInit",
                     "args": [],
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 17
+                    "line": 60
                 }
             ],
             "hostBindings": [],
@@ -277,19 +343,25 @@
             "description": "",
             "rawdescription": "",
             "type": "component",
-            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'ui-ngTable',\n  template: `\n    <p>\n      ng-table works!\n    </p>\n  `,\n  styles: [\n  ]\n})\nexport class NgTableComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit(): void {\n  }\n\n}\n",
+            "sourceCode": "import { Component, OnInit } from '@angular/core'\nimport { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'\n\n@Component({\n  selector: 'ui-ng-table',\n  templateUrl: './ng-table.component.html',\n  styleUrls: ['./ng-table.component.scss']\n})\nexport class NgTableComponent implements OnInit {\n  sortRule = { key: 'id', direction: 'asc' }\n\n  items = [{\n    id: 1,\n    name: 'Bob Bobson',\n    title: 'Asst Regional Mgr',\n    age: 35,\n    hair: 'black'\n  }, {\n    id: 2,\n    name: 'Paul Paulson',\n    title: 'Office Mgr',\n    age: 30,\n    hair: 'brown'\n  }, {\n    id: 3,\n    name: 'Ann Annington',\n    title: 'Sr Engineer',\n    age: 27,\n    hair: 'purple'\n  }, {\n    id: 4,\n    name: 'Richard Richardson',\n    title: 'Sr Engineer',\n    age: 28,\n    hair: 'blonde'\n  }, {\n    id: 5,\n    name: 'Juliet Juliets',\n    title: 'Dog Enthusiast',\n    age: 22,\n    hair: 'orange'\n  }]\n\n  colDefs = [{\n    key: 'name',\n    label: 'Name'\n  }, {\n    key: 'title',\n    label: 'Title'\n  }, {\n    key: 'age',\n    label: 'Age'\n  }, {\n    key: 'hair',\n    label: 'Hair Color'\n  }]\n\n  constructor() { }\n\n  ngOnInit(): void {\n    console.log('init')\n  }\n\n  sortBy = (colKey) => {\n    const { key, direction } = this.sortRule\n    if (colKey === key) {\n      // if we are already sorting by this col asc,\n      // toggle into desc\n      if (direction === 'asc') {\n        this.sortRule.direction = 'desc'\n      } else {\n        // if we are already sorting this col desc,\n        // switch to default id asc order\n        this.sortRule = {\n          key: 'id',\n          direction: 'asc'\n        }\n      }\n    } else {\n      // otherwise, switch rule to this col, asc order\n      this.sortRule = {\n        key: colKey,\n        direction: 'asc'\n      }\n    }\n\n    this.sortData()\n  }\n\n  sortData = () => {\n    const { key, direction } = this.sortRule\n    const returnVal = direction === 'asc' ? 1 : -1\n    const newSortedData = this.items.sort((a, b) => (a[key] > b[key]) ? returnVal : -(returnVal))\n    this.items = [...newSortedData]\n  }\n\n  drop(event: CdkDragDrop<any[]>) {\n    console.log('did drop')\n    console.log(event)\n    moveItemInArray(this.colDefs, event.previousIndex, event.currentIndex)\n  }\n}\n",
             "assetsDirs": [],
-            "styleUrlsData": "",
+            "styleUrlsData": [
+                {
+                    "data": "@mixin all-cells {\r\n  padding: 8px;\r\n}\r\n\r\n.ng-table {\r\n  border: 1px solid black;\r\n  &-header {\r\n    display: flex;\r\n    border-bottom: 1px solid black;\r\n  }\r\n\r\n  &-col {\r\n    @include all-cells;\r\n    flex: 1;\r\n    &:not(:first-child) {\r\n      border-left: 1px solid black;\r\n    }\r\n  }\r\n\r\n  &-row {\r\n    display: flex;\r\n  }\r\n\r\n  &-cell {\r\n    @include all-cells;\r\n    flex: 1;\r\n  }\r\n}",
+                    "styleUrl": "./ng-table.component.scss"
+                }
+            ],
             "stylesData": "",
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
                 "args": [],
-                "line": 13
+                "line": 56
             },
             "implements": [
                 "OnInit"
-            ]
+            ],
+            "templateData": "<p>it still works!</p>\r\n\r\n<div class=\"ng-table\">\r\n  <div class=\"ng-table-header\"\r\n    cdkDropList\r\n    cdkDropListOrientation=\"horizontal\"\r\n    (cdkDropListDropped)=\"drop($event)\">\r\n    <div class=\"ng-table-col\"\r\n      *ngFor=\"let col of colDefs\"\r\n      (click)=\"sortBy(col.key)\"\r\n      cdkDrag>\r\n      {{col.label}}\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"ng-table-row\"\r\n    *ngFor=\"let item of items\">\r\n    <div class=\"ng-table-cell\"\r\n      *ngFor=\"let col of colDefs\">\r\n      {{item[col.key]}}\r\n    </div>\r\n  </div>\r\n</div>"
         },
         {
             "name": "PageComponent",
@@ -873,7 +945,7 @@
                 "linktype": "component",
                 "name": "NgTableComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/3",
+                "coverageCount": "0/9",
                 "status": "low"
             },
             {

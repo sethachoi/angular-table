@@ -1,0 +1,24 @@
+<p>it still works!</p>
+
+<div class="ng-table">
+  <div class="ng-table-header"
+    cdkDropList
+    cdkDropListOrientation="horizontal"
+    (cdkDropListDropped)="drop($event)">
+    <div class="ng-table-col"
+      *ngFor="let col of colDefs"
+      (click)="sortBy(col.key)"
+      cdkDragLockAxis="x"
+      cdkDrag>
+      {{col.label}}
+    </div>
+  </div>
+
+  <div class="ng-table-row"
+    *ngFor="let item of items">
+    <div class="ng-table-cell"
+      *ngFor="let col of colDefs">
+      {{item[col.key]}}
+    </div>
+  </div>
+</div>

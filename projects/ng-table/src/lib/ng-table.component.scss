@@ -1,0 +1,45 @@
+@mixin all-cells {
+  padding: 8px;
+}
+
+.ng-table {
+  border: 1px solid black;
+  &-header {
+    display: flex;
+    border-bottom: 1px solid black;
+  }
+
+  &-col {
+    @include all-cells;
+    flex: 1;
+    &:not(:first-child) {
+      border-left: 1px solid black;
+    }
+
+
+    &.cdk-drag-preview {
+      flex: 0;
+      width: 0;
+      padding: 0;
+      height: 25px;
+      border: none;
+      background-color: white;
+      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+              0 8px 10px 1px rgba(0, 0, 0, 0.14),
+              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+    }
+
+    &.cdk-drag-placeholder {
+      opacity: 25%;
+    }
+  }
+
+  &-row {
+    display: flex;
+  }
+
+  &-cell {
+    @include all-cells;
+    flex: 1;
+  }
+}
