@@ -6,18 +6,22 @@
     cdkDropListOrientation="horizontal"
     (cdkDropListDropped)="drop($event)">
     <div class="ng-table-col"
-      *ngFor="let col of colDefs"
+      *ngFor="let col of (colDefs$ | async)"
       (click)="sortBy(col.key)"
       cdkDragLockAxis="x"
       cdkDrag>
       {{col.label}}
+      <div *ngIf="ruleDirection(col.key)">
+        {{ruleIndex(col.key)}}
+        <ui-sort-icon  [direction]="ruleDirection(col.key)"></ui-sort-icon>
+      </div>
     </div>
   </div>
 
   <div class="ng-table-row"
-    *ngFor="let item of items">
+    *ngFor="let item of (items$ | async)">
     <div class="ng-table-cell"
-      *ngFor="let col of colDefs">
+      *ngFor="let col of (colDefs$ | async)">
       {{item[col.key]}}
     </div>
   </div>

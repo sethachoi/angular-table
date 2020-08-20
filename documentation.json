@@ -1,6 +1,40 @@
 {
     "pipes": [],
-    "interfaces": [],
+    "interfaces": [
+        {
+            "name": "TableState",
+            "id": "interface-TableState-f6eeb3438e69a2403b10629d96a85d14",
+            "file": "projects/ng-table/src/lib/ng-table.store.ts",
+            "type": "interface",
+            "sourceCode": "import { Injectable } from '@angular/core'\r\nimport { ComponentStore } from '@ngrx/component-store'\r\nimport { Observable } from 'rxjs'\r\n\r\nexport type SortType = {\r\n  key: string\r\n  direction: 'asc' | 'desc'\r\n}\r\n\r\nexport type ColType = {\r\n  key: string\r\n  label: string\r\n}\r\n\r\nexport interface TableState {\r\n  sortRule: SortType\r\n  items: any[]\r\n  colDefs: ColType[]\r\n}\r\n\r\n@Injectable()\r\nexport class TableStore extends ComponentStore<TableState> {\r\n  constructor() {\r\n    super({ sortRule: { key: 'id', direction: 'asc' }, items: [], colDefs: [] })\r\n  }\r\n\r\n  readonly sortRule$: Observable<SortType> = this.select(state => state.sortRule)\r\n  readonly items$: Observable<any[]> = this.select(state => state.items)\r\n  readonly colDefs$: Observable<ColType[]> = this.select(state => state.colDefs)\r\n\r\n  readonly setColDefs = this.updater((state, newCols: ColType[]) => ({\r\n    ...state,\r\n    colDefs: newCols\r\n  }))\r\n\r\n  readonly setItems = this.updater((state, newItems: any[]) => {\r\n    const { sortRule } = state\r\n\r\n    const newSortedData = this.resortItems(newItems, sortRule)\r\n    return {\r\n      ...state,\r\n      items: newSortedData\r\n    }\r\n  })\r\n\r\n  readonly sortBy = this.updater((state, colKey: string) => {\r\n    const { sortRule: { key, direction }, items } = state\r\n    let newSortRule = {\r\n      key,\r\n      direction\r\n    }\r\n    if (colKey === key) {\r\n      // if we are already sorting by this col asc,\r\n      // toggle into desc\r\n      if (direction === 'asc') {\r\n        newSortRule.direction = 'desc'\r\n      } else {\r\n        // if we are already sorting this col desc,\r\n        // switch to default id asc order\r\n        newSortRule = {\r\n          key: 'id',\r\n          direction: 'asc'\r\n        }\r\n      }\r\n    } else {\r\n      // otherwise, switch rule to this col, asc order\r\n      newSortRule = {\r\n        key: colKey,\r\n        direction: 'asc'\r\n      }\r\n    }\r\n\r\n    const newItems = this.resortItems(items, newSortRule)\r\n    return { ...state, sortRule: newSortRule, items: newItems }\r\n  })\r\n\r\n  private resortItems = (itemsToSort: any[], currentSortRule: SortType): any[] => {\r\n    const { key, direction } = currentSortRule\r\n\r\n    const returnVal = direction === 'asc' ? 1 : -1\r\n    const newSortedData = itemsToSort.sort((a, b) => (a[key] > b[key]) ? returnVal : -(returnVal))\r\n    return newSortedData\r\n  }\r\n}",
+            "properties": [
+                {
+                    "name": "colDefs",
+                    "type": "ColType[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 18
+                },
+                {
+                    "name": "items",
+                    "type": "any[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 17
+                },
+                {
+                    "name": "sortRule",
+                    "type": "SortType",
+                    "optional": false,
+                    "description": "",
+                    "line": 16
+                }
+            ],
+            "indexSignatures": [],
+            "kind": 150,
+            "methods": []
+        }
+    ],
     "injectables": [
         {
             "name": "NgTableService",
@@ -16,6 +50,101 @@
                 "args": [],
                 "line": 6
             },
+            "type": "injectable"
+        },
+        {
+            "name": "TableStore",
+            "id": "injectable-TableStore-f6eeb3438e69a2403b10629d96a85d14",
+            "file": "projects/ng-table/src/lib/ng-table.store.ts",
+            "properties": [
+                {
+                    "name": "colDefs$",
+                    "defaultValue": "this.select(state => state.colDefs)",
+                    "type": "Observable<ColType[]>",
+                    "optional": false,
+                    "description": "",
+                    "line": 29,
+                    "modifierKind": [
+                        132
+                    ]
+                },
+                {
+                    "name": "items$",
+                    "defaultValue": "this.select(state => state.items)",
+                    "type": "Observable<any[]>",
+                    "optional": false,
+                    "description": "",
+                    "line": 28,
+                    "modifierKind": [
+                        132
+                    ]
+                },
+                {
+                    "name": "resortItems",
+                    "defaultValue": "() => {...}",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 77,
+                    "modifierKind": [
+                        112
+                    ]
+                },
+                {
+                    "name": "setColDefs",
+                    "defaultValue": "this.updater((state, newCols: ColType[]) => ({\r\n    ...state,\r\n    colDefs: newCols\r\n  }))",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 31,
+                    "modifierKind": [
+                        132
+                    ]
+                },
+                {
+                    "name": "setItems",
+                    "defaultValue": "this.updater((state, newItems: any[]) => {\r\n    const { sortRule } = state\r\n\r\n    const newSortedData = this.resortItems(newItems, sortRule)\r\n    return {\r\n      ...state,\r\n      items: newSortedData\r\n    }\r\n  })",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 36,
+                    "modifierKind": [
+                        132
+                    ]
+                },
+                {
+                    "name": "sortBy",
+                    "defaultValue": "this.updater((state, colKey: string) => {\r\n    const { sortRule: { key, direction }, items } = state\r\n    let newSortRule = {\r\n      key,\r\n      direction\r\n    }\r\n    if (colKey === key) {\r\n      // if we are already sorting by this col asc,\r\n      // toggle into desc\r\n      if (direction === 'asc') {\r\n        newSortRule.direction = 'desc'\r\n      } else {\r\n        // if we are already sorting this col desc,\r\n        // switch to default id asc order\r\n        newSortRule = {\r\n          key: 'id',\r\n          direction: 'asc'\r\n        }\r\n      }\r\n    } else {\r\n      // otherwise, switch rule to this col, asc order\r\n      newSortRule = {\r\n        key: colKey,\r\n        direction: 'asc'\r\n      }\r\n    }\r\n\r\n    const newItems = this.resortItems(items, newSortRule)\r\n    return { ...state, sortRule: newSortRule, items: newItems }\r\n  })",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 46,
+                    "modifierKind": [
+                        132
+                    ]
+                },
+                {
+                    "name": "sortRule$",
+                    "defaultValue": "this.select(state => state.sortRule)",
+                    "type": "Observable<SortType>",
+                    "optional": false,
+                    "description": "",
+                    "line": 27,
+                    "modifierKind": [
+                        132
+                    ]
+                }
+            ],
+            "methods": [],
+            "description": "",
+            "sourceCode": "import { Injectable } from '@angular/core'\r\nimport { ComponentStore } from '@ngrx/component-store'\r\nimport { Observable } from 'rxjs'\r\n\r\nexport type SortType = {\r\n  key: string\r\n  direction: 'asc' | 'desc'\r\n}\r\n\r\nexport type ColType = {\r\n  key: string\r\n  label: string\r\n}\r\n\r\nexport interface TableState {\r\n  sortRule: SortType\r\n  items: any[]\r\n  colDefs: ColType[]\r\n}\r\n\r\n@Injectable()\r\nexport class TableStore extends ComponentStore<TableState> {\r\n  constructor() {\r\n    super({ sortRule: { key: 'id', direction: 'asc' }, items: [], colDefs: [] })\r\n  }\r\n\r\n  readonly sortRule$: Observable<SortType> = this.select(state => state.sortRule)\r\n  readonly items$: Observable<any[]> = this.select(state => state.items)\r\n  readonly colDefs$: Observable<ColType[]> = this.select(state => state.colDefs)\r\n\r\n  readonly setColDefs = this.updater((state, newCols: ColType[]) => ({\r\n    ...state,\r\n    colDefs: newCols\r\n  }))\r\n\r\n  readonly setItems = this.updater((state, newItems: any[]) => {\r\n    const { sortRule } = state\r\n\r\n    const newSortedData = this.resortItems(newItems, sortRule)\r\n    return {\r\n      ...state,\r\n      items: newSortedData\r\n    }\r\n  })\r\n\r\n  readonly sortBy = this.updater((state, colKey: string) => {\r\n    const { sortRule: { key, direction }, items } = state\r\n    let newSortRule = {\r\n      key,\r\n      direction\r\n    }\r\n    if (colKey === key) {\r\n      // if we are already sorting by this col asc,\r\n      // toggle into desc\r\n      if (direction === 'asc') {\r\n        newSortRule.direction = 'desc'\r\n      } else {\r\n        // if we are already sorting this col desc,\r\n        // switch to default id asc order\r\n        newSortRule = {\r\n          key: 'id',\r\n          direction: 'asc'\r\n        }\r\n      }\r\n    } else {\r\n      // otherwise, switch rule to this col, asc order\r\n      newSortRule = {\r\n        key: colKey,\r\n        direction: 'asc'\r\n      }\r\n    }\r\n\r\n    const newItems = this.resortItems(items, newSortRule)\r\n    return { ...state, sortRule: newSortRule, items: newItems }\r\n  })\r\n\r\n  private resortItems = (itemsToSort: any[], currentSortRule: SortType): any[] => {\r\n    const { key, direction } = currentSortRule\r\n\r\n    const returnVal = direction === 'asc' ? 1 : -1\r\n    const newSortedData = itemsToSort.sort((a, b) => (a[key] > b[key]) ? returnVal : -(returnVal))\r\n    return newSortedData\r\n  }\r\n}",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 22
+            },
+            "extends": "ComponentStore",
             "type": "injectable"
         }
     ],
@@ -246,13 +375,17 @@
         },
         {
             "name": "NgTableComponent",
-            "id": "component-NgTableComponent-2f414776a91c7cfd570e82d1c513e7f2",
+            "id": "component-NgTableComponent-9f12da41ec543f2ce231e8473f6f7640",
             "file": "projects/ng-table/src/lib/ng-table.component.ts",
             "encapsulation": [],
             "entryComponents": [],
             "inputs": [],
             "outputs": [],
-            "providers": [],
+            "providers": [
+                {
+                    "name": "TableStore"
+                }
+            ],
             "selector": "ui-ng-table",
             "styleUrls": [
                 "./ng-table.component.scss"
@@ -262,24 +395,48 @@
                 "./ng-table.component.html"
             ],
             "viewProviders": [],
-            "inputsClass": [],
-            "outputsClass": [],
-            "propertiesClass": [
+            "inputsClass": [
                 {
                     "name": "colDefs",
-                    "defaultValue": "[{\n    key: 'name',\n    label: 'Name'\n  }, {\n    key: 'title',\n    label: 'Title'\n  }, {\n    key: 'age',\n    label: 'Age'\n  }, {\n    key: 'hair',\n    label: 'Hair Color'\n  }]",
-                    "type": "[]",
-                    "optional": false,
-                    "description": "",
-                    "line": 44
+                    "line": 18,
+                    "type": "[]"
                 },
                 {
                     "name": "items",
-                    "defaultValue": "[{\n    id: 1,\n    name: 'Bob Bobson',\n    title: 'Asst Regional Mgr',\n    age: 35,\n    hair: 'black'\n  }, {\n    id: 2,\n    name: 'Paul Paulson',\n    title: 'Office Mgr',\n    age: 30,\n    hair: 'brown'\n  }, {\n    id: 3,\n    name: 'Ann Annington',\n    title: 'Sr Engineer',\n    age: 27,\n    hair: 'purple'\n  }, {\n    id: 4,\n    name: 'Richard Richardson',\n    title: 'Sr Engineer',\n    age: 28,\n    hair: 'blonde'\n  }, {\n    id: 5,\n    name: 'Juliet Juliets',\n    title: 'Dog Enthusiast',\n    age: 22,\n    hair: 'orange'\n  }]",
+                    "line": 13,
+                    "type": "[]"
+                },
+                {
+                    "name": "primaryKey",
+                    "defaultValue": "'id'",
+                    "line": 23
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "colDefs$",
+                    "defaultValue": "this.tableStore.colDefs$",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 27
+                },
+                {
+                    "name": "colsCopy",
+                    "defaultValue": "[]",
                     "type": "[]",
                     "optional": false,
                     "description": "",
-                    "line": 12
+                    "line": 28
+                },
+                {
+                    "name": "items$",
+                    "defaultValue": "this.tableStore.items$",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 26
                 },
                 {
                     "name": "sortBy",
@@ -287,23 +444,15 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 64
+                    "line": 36
                 },
                 {
-                    "name": "sortData",
-                    "defaultValue": "() => {...}",
+                    "name": "sortRule$",
+                    "defaultValue": "this.tableStore.sortRule$",
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 90
-                },
-                {
-                    "name": "sortRule",
-                    "defaultValue": "{ key: 'id', direction: 'asc' }",
-                    "type": "object",
-                    "optional": false,
-                    "description": "",
-                    "line": 10
+                    "line": 25
                 }
             ],
             "methodsClass": [
@@ -318,7 +467,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 97,
+                    "line": 40,
                     "jsdoctags": [
                         {
                             "name": "event",
@@ -335,7 +484,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 60
+                    "line": 32
                 }
             ],
             "hostBindings": [],
@@ -343,11 +492,11 @@
             "description": "",
             "rawdescription": "",
             "type": "component",
-            "sourceCode": "import { Component, OnInit } from '@angular/core'\nimport { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'\n\n@Component({\n  selector: 'ui-ng-table',\n  templateUrl: './ng-table.component.html',\n  styleUrls: ['./ng-table.component.scss']\n})\nexport class NgTableComponent implements OnInit {\n  sortRule = { key: 'id', direction: 'asc' }\n\n  items = [{\n    id: 1,\n    name: 'Bob Bobson',\n    title: 'Asst Regional Mgr',\n    age: 35,\n    hair: 'black'\n  }, {\n    id: 2,\n    name: 'Paul Paulson',\n    title: 'Office Mgr',\n    age: 30,\n    hair: 'brown'\n  }, {\n    id: 3,\n    name: 'Ann Annington',\n    title: 'Sr Engineer',\n    age: 27,\n    hair: 'purple'\n  }, {\n    id: 4,\n    name: 'Richard Richardson',\n    title: 'Sr Engineer',\n    age: 28,\n    hair: 'blonde'\n  }, {\n    id: 5,\n    name: 'Juliet Juliets',\n    title: 'Dog Enthusiast',\n    age: 22,\n    hair: 'orange'\n  }]\n\n  colDefs = [{\n    key: 'name',\n    label: 'Name'\n  }, {\n    key: 'title',\n    label: 'Title'\n  }, {\n    key: 'age',\n    label: 'Age'\n  }, {\n    key: 'hair',\n    label: 'Hair Color'\n  }]\n\n  constructor() { }\n\n  ngOnInit(): void {\n    console.log('init')\n  }\n\n  sortBy = (colKey) => {\n    const { key, direction } = this.sortRule\n    if (colKey === key) {\n      // if we are already sorting by this col asc,\n      // toggle into desc\n      if (direction === 'asc') {\n        this.sortRule.direction = 'desc'\n      } else {\n        // if we are already sorting this col desc,\n        // switch to default id asc order\n        this.sortRule = {\n          key: 'id',\n          direction: 'asc'\n        }\n      }\n    } else {\n      // otherwise, switch rule to this col, asc order\n      this.sortRule = {\n        key: colKey,\n        direction: 'asc'\n      }\n    }\n\n    this.sortData()\n  }\n\n  sortData = () => {\n    const { key, direction } = this.sortRule\n    const returnVal = direction === 'asc' ? 1 : -1\n    const newSortedData = this.items.sort((a, b) => (a[key] > b[key]) ? returnVal : -(returnVal))\n    this.items = [...newSortedData]\n  }\n\n  drop(event: CdkDragDrop<any[]>) {\n    console.log('did drop')\n    console.log(event)\n    moveItemInArray(this.colDefs, event.previousIndex, event.currentIndex)\n  }\n}\n",
+            "sourceCode": "import { Component, OnInit, Input } from '@angular/core'\nimport { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'\nimport { TableStore, SortType, ColType } from './ng-table.store'\n\n@Component({\n  selector: 'ui-ng-table',\n  templateUrl: './ng-table.component.html',\n  styleUrls: ['./ng-table.component.scss'],\n  providers: [TableStore]\n})\nexport class NgTableComponent implements OnInit {\n  @Input()\n  set items(value: any[]) {\n    this.tableStore.setItems(value)\n  }\n\n  @Input()\n  set colDefs(value: ColType[]) {\n    this.tableStore.setColDefs(value)\n  }\n\n  @Input()\n  primaryKey = 'id'\n\n  sortRule$ = this.tableStore.sortRule$\n  items$ = this.tableStore.items$\n  colDefs$ = this.tableStore.colDefs$\n  colsCopy = []\n\n  constructor(private readonly tableStore: TableStore) { }\n\n  ngOnInit(): void {\n    this.colDefs$.subscribe(data => this.colsCopy = [...data])\n  }\n\n  sortBy = (colKey) => {\n    this.tableStore.sortBy(colKey)\n  }\n\n  drop(event: CdkDragDrop<any[]>): void {\n    moveItemInArray(this.colsCopy, event.previousIndex, event.currentIndex)\n    this.tableStore.setColDefs(this.colsCopy)\n  }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": "@mixin all-cells {\r\n  padding: 8px;\r\n}\r\n\r\n.ng-table {\r\n  border: 1px solid black;\r\n  &-header {\r\n    display: flex;\r\n    border-bottom: 1px solid black;\r\n  }\r\n\r\n  &-col {\r\n    @include all-cells;\r\n    flex: 1;\r\n    &:not(:first-child) {\r\n      border-left: 1px solid black;\r\n    }\r\n  }\r\n\r\n  &-row {\r\n    display: flex;\r\n  }\r\n\r\n  &-cell {\r\n    @include all-cells;\r\n    flex: 1;\r\n  }\r\n}",
+                    "data": "@mixin all-cells {\r\n  padding: 8px;\r\n}\r\n\r\n.ng-table {\r\n  border: 1px solid black;\r\n  &-header {\r\n    display: flex;\r\n    border-bottom: 1px solid black;\r\n  }\r\n\r\n  &-col {\r\n    @include all-cells;\r\n    flex: 1;\r\n    &:not(:first-child) {\r\n      border-left: 1px solid black;\r\n    }\r\n\r\n\r\n    &.cdk-drag-preview {\r\n      flex: 0;\r\n      width: 0;\r\n      padding: 0;\r\n      height: 25px;\r\n      border: none;\r\n      background-color: white;\r\n      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),\r\n              0 8px 10px 1px rgba(0, 0, 0, 0.14),\r\n              0 3px 14px 2px rgba(0, 0, 0, 0.12);\r\n    }\r\n\r\n    &.cdk-drag-placeholder {\r\n      opacity: 25%;\r\n    }\r\n  }\r\n\r\n  &-row {\r\n    display: flex;\r\n  }\r\n\r\n  &-cell {\r\n    @include all-cells;\r\n    flex: 1;\r\n  }\r\n}",
                     "styleUrl": "./ng-table.component.scss"
                 }
             ],
@@ -355,13 +504,77 @@
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
-                "args": [],
-                "line": 56
+                "args": [
+                    {
+                        "name": "tableStore",
+                        "type": "TableStore"
+                    }
+                ],
+                "line": 28,
+                "jsdoctags": [
+                    {
+                        "name": "tableStore",
+                        "type": "TableStore",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
             },
             "implements": [
                 "OnInit"
             ],
-            "templateData": "<p>it still works!</p>\r\n\r\n<div class=\"ng-table\">\r\n  <div class=\"ng-table-header\"\r\n    cdkDropList\r\n    cdkDropListOrientation=\"horizontal\"\r\n    (cdkDropListDropped)=\"drop($event)\">\r\n    <div class=\"ng-table-col\"\r\n      *ngFor=\"let col of colDefs\"\r\n      (click)=\"sortBy(col.key)\"\r\n      cdkDrag>\r\n      {{col.label}}\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"ng-table-row\"\r\n    *ngFor=\"let item of items\">\r\n    <div class=\"ng-table-cell\"\r\n      *ngFor=\"let col of colDefs\">\r\n      {{item[col.key]}}\r\n    </div>\r\n  </div>\r\n</div>"
+            "accessors": {
+                "items": {
+                    "name": "items",
+                    "setSignature": {
+                        "name": "items",
+                        "type": "void",
+                        "args": [
+                            {
+                                "name": "value",
+                                "type": "[]"
+                            }
+                        ],
+                        "returnType": "void",
+                        "line": 13,
+                        "jsdoctags": [
+                            {
+                                "name": "value",
+                                "type": "[]",
+                                "tagName": {
+                                    "text": "param"
+                                }
+                            }
+                        ]
+                    }
+                },
+                "colDefs": {
+                    "name": "colDefs",
+                    "setSignature": {
+                        "name": "colDefs",
+                        "type": "void",
+                        "args": [
+                            {
+                                "name": "value",
+                                "type": "[]"
+                            }
+                        ],
+                        "returnType": "void",
+                        "line": 18,
+                        "jsdoctags": [
+                            {
+                                "name": "value",
+                                "type": "[]",
+                                "tagName": {
+                                    "text": "param"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "templateData": "<p>it still works!</p>\r\n\r\n<div class=\"ng-table\">\r\n  <div class=\"ng-table-header\"\r\n    cdkDropList\r\n    cdkDropListOrientation=\"horizontal\"\r\n    (cdkDropListDropped)=\"drop($event)\">\r\n    <div class=\"ng-table-col\"\r\n      *ngFor=\"let col of (colDefs$ | async)\"\r\n      (click)=\"sortBy(col.key)\"\r\n      cdkDragLockAxis=\"x\"\r\n      cdkDrag>\r\n      {{col.label}}\r\n    </div>\r\n  </div>\r\n\r\n  <div class=\"ng-table-row\"\r\n    *ngFor=\"let item of (items$ | async)\">\r\n    <div class=\"ng-table-cell\"\r\n      *ngFor=\"let col of (colDefs$ | async)\">\r\n      {{item[col.key]}}\r\n    </div>\r\n  </div>\r\n</div>"
         },
         {
             "name": "PageComponent",
@@ -538,6 +751,14 @@
     "miscellaneous": {
         "variables": [
             {
+                "name": "colDefs",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "stories/ngTable.stories.ts",
+                "type": "[]",
+                "defaultValue": "[{\r\n  key: 'name',\r\n  label: 'Name'\r\n}, {\r\n  key: 'title',\r\n  label: 'Title'\r\n}, {\r\n  key: 'age',\r\n  label: 'Age'\r\n}, {\r\n  key: 'hair',\r\n  label: 'Hair Color'\r\n}]"
+            },
+            {
                 "name": "context",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -568,6 +789,14 @@
                 "file": "projects/exampleApp/src/environments/environment.prod.ts",
                 "type": "object",
                 "defaultValue": "{\n  production: true\n}"
+            },
+            {
+                "name": "items",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "stories/ngTable.stories.ts",
+                "type": "[]",
+                "defaultValue": "[{\r\n  id: 1,\r\n  name: 'Bob Bobson',\r\n  title: 'Asst Regional Mgr',\r\n  age: 35,\r\n  hair: 'black'\r\n}, {\r\n  id: 2,\r\n  name: 'Paul Paulson',\r\n  title: 'Office Mgr',\r\n  age: 30,\r\n  hair: 'brown'\r\n}, {\r\n  id: 3,\r\n  name: 'Ann Annington',\r\n  title: 'Sr Engineer',\r\n  age: 27,\r\n  hair: 'purple'\r\n}, {\r\n  id: 4,\r\n  name: 'Richard Richardson',\r\n  title: 'Sr Engineer',\r\n  age: 28,\r\n  hair: 'blonde'\r\n}, {\r\n  id: 5,\r\n  name: 'Juliet Juliets',\r\n  title: 'Dog Enthusiast',\r\n  age: 22,\r\n  hair: 'orange'\r\n}]"
             },
             {
                 "name": "Large",
@@ -667,17 +896,17 @@
                 "name": "Template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "stories/ngTable.stories.ts",
-                "type": "Story<NgTableComponent>",
-                "defaultValue": "(args: NgTableComponent) => ({\r\n  component: NgTableComponent,\r\n  props: args,\r\n})"
+                "file": "stories/Header.stories.ts",
+                "type": "Story<Header>",
+                "defaultValue": "(args: Header) => ({\n  component: Header,\n  props: args,\n})"
             },
             {
                 "name": "Template",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "stories/Header.stories.ts",
-                "type": "Story<Header>",
-                "defaultValue": "(args: Header) => ({\n  component: Header,\n  props: args,\n})"
+                "file": "stories/ngTable.stories.ts",
+                "type": "Story<NgTableComponent>",
+                "defaultValue": "(args: NgTableComponent) => ({\r\n  component: NgTableComponent,\r\n  props: args,\r\n})"
             },
             {
                 "name": "Template",
@@ -689,9 +918,62 @@
             }
         ],
         "functions": [],
-        "typealiases": [],
+        "typealiases": [
+            {
+                "name": "ColType",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "rawtype": "literal type",
+                "file": "projects/ng-table/src/lib/ng-table.store.ts",
+                "description": "",
+                "kind": 165
+            },
+            {
+                "name": "SortType",
+                "ctype": "miscellaneous",
+                "subtype": "typealias",
+                "rawtype": "literal type",
+                "file": "projects/ng-table/src/lib/ng-table.store.ts",
+                "description": "",
+                "kind": 165
+            }
+        ],
         "enumerations": [],
         "groupedVariables": {
+            "stories/ngTable.stories.ts": [
+                {
+                    "name": "colDefs",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ngTable.stories.ts",
+                    "type": "[]",
+                    "defaultValue": "[{\r\n  key: 'name',\r\n  label: 'Name'\r\n}, {\r\n  key: 'title',\r\n  label: 'Title'\r\n}, {\r\n  key: 'age',\r\n  label: 'Age'\r\n}, {\r\n  key: 'hair',\r\n  label: 'Hair Color'\r\n}]"
+                },
+                {
+                    "name": "items",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ngTable.stories.ts",
+                    "type": "[]",
+                    "defaultValue": "[{\r\n  id: 1,\r\n  name: 'Bob Bobson',\r\n  title: 'Asst Regional Mgr',\r\n  age: 35,\r\n  hair: 'black'\r\n}, {\r\n  id: 2,\r\n  name: 'Paul Paulson',\r\n  title: 'Office Mgr',\r\n  age: 30,\r\n  hair: 'brown'\r\n}, {\r\n  id: 3,\r\n  name: 'Ann Annington',\r\n  title: 'Sr Engineer',\r\n  age: 27,\r\n  hair: 'purple'\r\n}, {\r\n  id: 4,\r\n  name: 'Richard Richardson',\r\n  title: 'Sr Engineer',\r\n  age: 28,\r\n  hair: 'blonde'\r\n}, {\r\n  id: 5,\r\n  name: 'Juliet Juliets',\r\n  title: 'Dog Enthusiast',\r\n  age: 22,\r\n  hair: 'orange'\r\n}]"
+                },
+                {
+                    "name": "Overall",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ngTable.stories.ts",
+                    "type": "",
+                    "defaultValue": "Template.bind({})"
+                },
+                {
+                    "name": "Template",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "stories/ngTable.stories.ts",
+                    "type": "Story<NgTableComponent>",
+                    "defaultValue": "(args: NgTableComponent) => ({\r\n  component: NgTableComponent,\r\n  props: args,\r\n})"
+                }
+            ],
             "projects/ng-table/src/test.ts": [
                 {
                     "name": "context",
@@ -839,29 +1121,32 @@
                     "type": "Story<Page>",
                     "defaultValue": "(args: Page) => ({\n  component: Page,\n  props: args,\n})"
                 }
-            ],
-            "stories/ngTable.stories.ts": [
-                {
-                    "name": "Overall",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/ngTable.stories.ts",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Template",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/ngTable.stories.ts",
-                    "type": "Story<NgTableComponent>",
-                    "defaultValue": "(args: NgTableComponent) => ({\r\n  component: NgTableComponent,\r\n  props: args,\r\n})"
-                }
             ]
         },
         "groupedFunctions": {},
         "groupedEnumerations": {},
-        "groupedTypeAliases": {}
+        "groupedTypeAliases": {
+            "projects/ng-table/src/lib/ng-table.store.ts": [
+                {
+                    "name": "ColType",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "rawtype": "literal type",
+                    "file": "projects/ng-table/src/lib/ng-table.store.ts",
+                    "description": "",
+                    "kind": 165
+                },
+                {
+                    "name": "SortType",
+                    "ctype": "miscellaneous",
+                    "subtype": "typealias",
+                    "rawtype": "literal type",
+                    "file": "projects/ng-table/src/lib/ng-table.store.ts",
+                    "description": "",
+                    "kind": 165
+                }
+            ]
+        }
     },
     "routes": {
         "name": "<root>",
@@ -878,7 +1163,7 @@
         ]
     },
     "coverage": {
-        "count": 3,
+        "count": 2,
         "status": "low",
         "files": [
             {
@@ -945,7 +1230,7 @@
                 "linktype": "component",
                 "name": "NgTableComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/9",
+                "coverageCount": "0/12",
                 "status": "low"
             },
             {
@@ -955,6 +1240,24 @@
                 "name": "NgTableService",
                 "coveragePercent": 0,
                 "coverageCount": "0/2",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ng-table/src/lib/ng-table.store.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "TableStore",
+                "coveragePercent": 0,
+                "coverageCount": "0/9",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/ng-table/src/lib/ng-table.store.ts",
+                "type": "interface",
+                "linktype": "interface",
+                "name": "TableState",
+                "coveragePercent": 0,
+                "coverageCount": "0/4",
                 "status": "low"
             },
             {
@@ -1103,6 +1406,26 @@
                 "name": "HeaderComponent",
                 "coveragePercent": 0,
                 "coverageCount": "0/5",
+                "status": "low"
+            },
+            {
+                "filePath": "stories/ngTable.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "colDefs",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "stories/ngTable.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "items",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
                 "status": "low"
             },
             {

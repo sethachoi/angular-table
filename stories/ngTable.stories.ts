@@ -40,12 +40,24 @@ const items = [{
   hair: 'purple'
 }, {
   id: 4,
+  name: 'Ann Annington',
+  title: 'Sr Engineer',
+  age: 23,
+  hair: 'purple'
+}, {
+  id: 5,
+  name: 'Ann Annington',
+  title: 'Engineer',
+  age: 23,
+  hair: 'purple'
+}, {
+  id: 6,
   name: 'Richard Richardson',
   title: 'Sr Engineer',
   age: 28,
   hair: 'blonde'
 }, {
-  id: 5,
+  id: 7,
   name: 'Juliet Juliets',
   title: 'Dog Enthusiast',
   age: 22,
@@ -53,6 +65,9 @@ const items = [{
 }]
 
 const colDefs = [{
+  key: 'id',
+  label: 'User Id'
+}, {
   key: 'name',
   label: 'Name'
 }, {
@@ -70,5 +85,5 @@ export const Overall = Template.bind({});
 Overall.args = {
   colDefs,
   items,
-  primaryKey: 'id'
+  primaryKey: 'age'
 }

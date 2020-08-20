@@ -1,63 +1,60 @@
 import { Component, OnInit, Input } from '@angular/core'
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
+import { TableStore, SortType, ColType } from './ng-table.store'
 
 @Component({
   selector: 'ui-ng-table',
   templateUrl: './ng-table.component.html',
-  styleUrls: ['./ng-table.component.scss']
+  styleUrls: ['./ng-table.component.scss'],
+  providers: [TableStore]
 })
 export class NgTableComponent implements OnInit {
   @Input()
-  items = []
+  set items(value: any[]) {
+    this.tableStore.setItems(value)
+    this.tableStore.setDefaultItems(value)
+  }
 
   @Input()
-  colDefs = []
+  set colDefs(value: ColType[]) {
+    this.tableStore.setColDefs(value)
+  }
 
   @Input()
   primaryKey = 'id'
 
-  sortRule = { key: 'id', direction: 'asc' }
+  sortRules$ = this.tableStore.sortRules$
+  items$ = this.tableStore.items$
+  colDefs$ = this.tableStore.colDefs$
+  colsCopy = []
+  sortRules = []
 
-  constructor() { }
+  constructor(private readonly tableStore: TableStore) { }
 
   ngOnInit(): void {
-    console.log('init')
+    console.log('actually latest?')
+    this.colDefs$.subscribe(data => this.colsCopy = [...data])
+    this.sortRules$.subscribe(data => this.sortRules = data)
+    this.tableStore.setState(state => ({
+      ...state,
+      primaryKey: this.primaryKey
+    }))
   }
 
   sortBy = (colKey) => {
-    const { key, direction } = this.sortRule
-    if (colKey === key) {
-      // if we are already sorting by this col asc,
-      // toggle into desc
-      if (direction === 'asc') {
-        this.sortRule.direction = 'desc'
-      } else {
-        // if we are already sorting this col desc,
-        // switch to default id asc order
-        this.sortRule = {
-          key: 'id',
-          direction: 'asc'
-        }
-      }
-    } else {
-      // otherwise, switch rule to this col, asc order
-      this.sortRule = {
-        key: colKey,
-        direction: 'asc'
-      }
-    }
-
-    this.sortData()
+    this.tableStore.sortBy(colKey)
   }
 
-  sortData = () => {
-    const { key, direction } = this.sortRule
-    const returnVal = direction === 'asc' ? 1 : -1
-    const newSortedData = this.items.sort((a, b) => (a[key] > b[key]) ? returnVal : -(returnVal))
-    this.items = [...newSortedData]
+  drop = (event: CdkDragDrop<any[]>): void => {
+    moveItemInArray(this.colsCopy, event.previousIndex, event.currentIndex)
+    this.tableStore.setColDefs(this.colsCopy)
   }
 
-  drop(event: CdkDragDrop<any[]>): void {
-    moveItemInArray(this.colDefs, event.previousIndex, event.currentIndex)
+  ruleDirection = (colKey: string): string => {
+    const foundRule = this.sortRules.find(rule => rule.key === colKey)
+    const direction = foundRule ? foundRule.direction : ''
+    return direction
   }
+
+  ruleIndex = (colKey: string): number => this.sortRules.findIndex(rule => rule.key === colKey) + 1
 }
