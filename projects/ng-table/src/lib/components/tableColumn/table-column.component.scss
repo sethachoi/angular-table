@@ -1,0 +1,29 @@
+.cdk-drag-preview {
+  opacity: 0;
+}
+
+.ng-table-col {
+  padding: 16px;
+  display: flex;
+  height: 20px;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  cursor: pointer;
+
+  &:not(:first-child) {
+    border-left: 1px solid black;
+  }
+
+  &_dragger {
+    width: 1px;
+    height: 100%;
+    background-color: black;
+    cursor: ew-resize;
+  }
+
+  &_actions-container {
+    height: 100%;
+    display: flex;
+  }
+}

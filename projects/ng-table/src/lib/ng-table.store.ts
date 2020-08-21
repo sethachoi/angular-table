@@ -10,6 +10,7 @@ export type SortType = {
 export type ColType = {
   key: string
   label: string
+  flex?: number
 }
 
 export interface TableState {

@@ -1,0 +1,14 @@
+<div class="ng-table-col"
+  #colContainer
+  (click)="sortBy(col.key)"
+  cdkDropList>
+  {{col.label}}
+  <div class="ng-table-col_actions-container">
+    <ng-content></ng-content>
+    <div
+      class="ng-table-col_dragger"
+      cdkDrag
+      (cdkDragMoved)="dragMove($event)"
+      cdkDragLockAxis="x"></div>
+  </div>
+</div>

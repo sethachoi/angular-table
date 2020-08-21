@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core'
+import { Component, OnInit, Input, OnDestroy } from '@angular/core'
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
-import { TableStore, SortType, ColType } from './ng-table.store'
+import { TableStore, ColType } from './ng-table.store'
 
 @Component({
   selector: 'ui-ng-table',
@@ -8,7 +8,7 @@ import { TableStore, SortType, ColType } from './ng-table.store'
   styleUrls: ['./ng-table.component.scss'],
   providers: [TableStore]
 })
-export class NgTableComponent implements OnInit {
+export class NgTableComponent implements OnInit, OnDestroy {
   @Input()
   set items(value: any[]) {
     this.tableStore.setItems(value)
@@ -28,17 +28,25 @@ export class NgTableComponent implements OnInit {
   colDefs$ = this.tableStore.colDefs$
   colsCopy = []
   sortRules = []
+  colDefSubscription
+  sortRulesSubscription
 
   constructor(private readonly tableStore: TableStore) { }
 
   ngOnInit(): void {
     console.log('actually latest?')
-    this.colDefs$.subscribe(data => this.colsCopy = [...data])
-    this.sortRules$.subscribe(data => this.sortRules = data)
+    console.log(window.location)
+    this.colDefSubscription = this.colDefs$.subscribe(data => this.colsCopy = [...data])
+    this.sortRulesSubscription = this.sortRules$.subscribe(data => this.sortRules = data)
     this.tableStore.setState(state => ({
       ...state,
       primaryKey: this.primaryKey
     }))
+  }
+
+  ngOnDestroy(): void {
+    this.colDefSubscription.unsubscribe()
+    this.sortRulesSubscription.unsubscribe()
   }
 
   sortBy = (colKey) => {
@@ -46,8 +54,11 @@ export class NgTableComponent implements OnInit {
   }
 
   drop = (event: CdkDragDrop<any[]>): void => {
-    moveItemInArray(this.colsCopy, event.previousIndex, event.currentIndex)
-    this.tableStore.setColDefs(this.colsCopy)
+    console.log(event)
+    console.log(this.colsCopy)
+    const newArrayCopy = [...this.colsCopy]
+    moveItemInArray(newArrayCopy, event.previousIndex, event.currentIndex)
+    this.tableStore.setColDefs(newArrayCopy)
   }
 
   ruleDirection = (colKey: string): string => {

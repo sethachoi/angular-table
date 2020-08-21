@@ -3,24 +3,30 @@
 <div class="ng-table">
   <div class="ng-table-header"
     cdkDropList
+    [cdkDropListData]="colDefs"
     cdkDropListOrientation="horizontal"
     (cdkDropListDropped)="drop($event)">
-    <div class="ng-table-col"
+
+    <ui-table-column
       *ngFor="let col of (colDefs$ | async)"
-      (click)="sortBy(col.key)"
+      [style.flex]="col.flex ? col.flex : 1"
+      [sortBy]="sortBy"
+      [col]="col"
       cdkDragLockAxis="x"
       cdkDrag>
-      {{col.label}}
-      <div *ngIf="ruleDirection(col.key)">
+
+      <div class="ng-table-col_filter-pill" *ngIf="ruleDirection(col.key)">
         {{ruleIndex(col.key)}}
         <ui-sort-icon  [direction]="ruleDirection(col.key)"></ui-sort-icon>
       </div>
-    </div>
+
+    </ui-table-column>
   </div>
 
   <div class="ng-table-row"
     *ngFor="let item of (items$ | async)">
     <div class="ng-table-cell"
+      [style.flex]="col.flex ? col.flex : 1"
       *ngFor="let col of (colDefs$ | async)">
       {{item[col.key]}}
     </div>

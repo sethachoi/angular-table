@@ -85,5 +85,5 @@ export const Overall = Template.bind({});
 Overall.args = {
   colDefs,
   items,
-  primaryKey: 'age'
+  primaryKey: 'id'
 }

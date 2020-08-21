@@ -1,5 +1,14 @@
+@mixin allSort {
+  margin-top: 2px;
+}
+
 .sort-icon {
   &_asc {
+    @include allSort;
     transform: scaleY(-1);
+  }
+
+  &_desc {
+    @include allSort;
   }
 }
