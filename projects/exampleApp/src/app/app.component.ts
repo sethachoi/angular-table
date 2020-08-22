@@ -28,8 +28,9 @@ export class AppComponent {
     console.log(sortFilters)
     console.log(window.location)
     if (sortFilters[0]) {
-      var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?myNewUrlQuery=' + sortFilters[0].key;
-      window.history.pushState({path:newurl},'',newurl);
+      const newurl =
+        window.location.protocol + '//' + window.location.host + window.location.pathname + '?myNewUrlQuery=' + sortFilters[0].key
+      window.history.pushState({path: newurl}, '', newurl)
     }
   }
 

@@ -3,11 +3,11 @@ import { setLoading } from './loading.actions'
 
 export const initialState = false
 
-const _reducer = createReducer(
+const reducer = createReducer(
   initialState,
   on(setLoading, (state, { loading }) => loading)
 )
 
-export function loadingReducer(state, action) {
-  return _reducer(state, action)
+export function loadingReducer(state, action): boolean {
+  return reducer(state, action)
 }

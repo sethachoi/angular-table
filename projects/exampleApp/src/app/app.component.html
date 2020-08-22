@@ -1,5 +1,5 @@
 <div class="content" role="main">
-  <div class="inner-content" [class.loading]="(loading$ | async)" [class.loaded]="!(loading$ | async)">
+  <div class="inner-content" [class.loading]="(loading$ | async)" [class.loaded]="(loading$ | async) === false">
     <div class="inner-content"></div>
   </div>
     <div class="table-container">
@@ -18,13 +18,5 @@
         ></ui-ng-table>
     </div>
 </div>
-
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content above * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced. * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * End of Placeholder * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
 <router-outlet></router-outlet>
