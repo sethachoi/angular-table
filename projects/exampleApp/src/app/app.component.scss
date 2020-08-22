@@ -1,0 +1,95 @@
+@keyframes animatedBackground {
+	0% { background-position: 0 0; }
+  50% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+@keyframes animatedBackground2 {
+	0% { background-position: 20% 0; }
+  50% { background-position: 100% 0; }
+  100% { background-position: 20% 0; }
+}
+
+.content {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  .inner-content {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    background-image: url(../assets/background-svg.svg);
+    background-repeat: repeat-x;
+    animation: animatedBackground 8s linear infinite;
+    z-index: -1;
+
+    .inner-content {
+      animation: animatedBackground 20s linear infinite;
+    }
+
+    &.loaded {
+      opacity: 0.75;
+      transition: opacity 2s ease-out;
+      animation-play-state: paused;
+      .inner-content {
+        opacity: 0.75;
+        transition: opacity 2s ease-out;
+        animation-play-state: paused;
+      }
+    }
+    &.loading {
+      opacity: 0.25;
+      transition: opacity 2s ease-in;
+      animation-play-state: running;
+      .inner-content {
+        opacity: 0.25;
+        transition: opacity 2s ease-in;
+        animation-play-state: running;
+      }
+    }
+  }
+}
+
+.table-container {
+  height: 550px;
+  width: 1280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  background-color: white;
+  border-radius: 3px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.button-container {
+  width: 1174px;
+}
+
+.fetch-button {
+  background-color: #0099ff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  font-family: sans-serif;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:active {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  }
+}

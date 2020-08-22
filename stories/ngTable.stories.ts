@@ -1,9 +1,9 @@
 // also exported from '@storybook/angular' if you can deal with breaking changes in 6.1+
-import { DatePipe } from '@angular/common';
 import { moduleMetadata } from '@storybook/angular';
 import { Story, Meta } from '@storybook/angular/types-6-0';
+import { action } from '@storybook/addon-actions';
 import { NgTableComponent } from '../projects/ng-table/src/lib/ng-table.component';
-import { NgTableModule } from '../projects/ng-table/src/lib/ng-table.module';
+import { NgTableModule } from '../projects/ng-table/src/lib';
 
 export default {
   title: 'Example/NgTable',
@@ -66,24 +66,32 @@ const items = [{
 
 const colDefs = [{
   key: 'id',
-  label: 'User Id'
+  label: 'User Id',
+  type: 'number'
 }, {
   key: 'name',
-  label: 'Name'
+  label: 'Name',
+  type: 'string'
 }, {
   key: 'title',
-  label: 'Title'
+  label: 'Title',
+  type: 'string'
 }, {
   key: 'age',
-  label: 'Age'
+  label: 'Age',
+  type: 'number'
 }, {
   key: 'hair',
-  label: 'Hair Color'
+  label: 'Hair Color',
+  type: 'string'
 }]
 
 export const Overall = Template.bind({});
 Overall.args = {
   colDefs,
   items,
-  primaryKey: 'id'
+  primaryKey: 'id',
+  loading: false,
+  maxHeight: 350,
+  filterUpdate: action('filterUpdate')
 }

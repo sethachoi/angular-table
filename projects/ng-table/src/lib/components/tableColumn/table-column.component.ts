@@ -1,6 +1,6 @@
 import { Component, Input, ElementRef, ViewChild } from '@angular/core'
 import { CdkDragMove } from '@angular/cdk/drag-drop'
-import type { ColType } from '../../ng-table.store'
+import { ColType } from '../../types'
 
 @Component({
   selector: 'ui-table-column',

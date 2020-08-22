@@ -6,7 +6,7 @@ export default {
   title: 'Example/Button',
   component: Button,
   argTypes: {
-    backgroundColor: { control: 'color' },
+    backgroundColor: { control: 'color' }
   },
 } as Meta;
 
@@ -19,6 +19,7 @@ export const Primary = Template.bind({});
 Primary.args = {
   primary: true,
   label: 'Button',
+  click: ($event) => { console.log($event) }
 };
 
 export const Secondary = Template.bind({});

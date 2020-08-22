@@ -2,7 +2,10 @@
   #colContainer
   (click)="sortBy(col.key)"
   cdkDropList>
-  {{col.label}}
+  <div class="ng-table-col_label"
+    [title]="col.label">
+    {{col.label}}
+  </div>
   <div class="ng-table-col_actions-container">
     <ng-content></ng-content>
     <div

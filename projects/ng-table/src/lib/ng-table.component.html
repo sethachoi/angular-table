@@ -1,5 +1,9 @@
-<p>it still works!</p>
-
+<ui-search-input
+  (valueUpdate)="updateFilterString($event)"
+  (colUpdate)="updateFilterCol($event)"
+  [filterCol]="(filterCol$ | async)"
+  [filterString]="(filterString$ | async)"
+  [colDefs]="(colDefs$ | async)"></ui-search-input>
 <div class="ng-table">
   <div class="ng-table-header"
     cdkDropList
@@ -8,6 +12,7 @@
     (cdkDropListDropped)="drop($event)">
 
     <ui-table-column
+      class="ng-table-column_component"
       *ngFor="let col of (colDefs$ | async)"
       [style.flex]="col.flex ? col.flex : 1"
       [sortBy]="sortBy"
@@ -23,12 +28,46 @@
     </ui-table-column>
   </div>
 
-  <div class="ng-table-row"
-    *ngFor="let item of (items$ | async)">
-    <div class="ng-table-cell"
-      [style.flex]="col.flex ? col.flex : 1"
-      *ngFor="let col of (colDefs$ | async)">
-      {{item[col.key]}}
-    </div>
+  <ng-container
+    *ngIf="(items$ | async).length !== 0 && !loading">
+    <div class="ng-table-body"
+      [style.maxHeight.px]="maxHeight">
+    <cdk-virtual-scroll-viewport
+      class="waddup"
+      [style.height.px]="maxHeightForViewport((items$ | async))"
+      itemSize="34">
+      <div class="ng-table-row"
+        *cdkVirtualFor="let item of (items$ | async)">
+        <div class="ng-table-cell"
+          [title]="item[col.key]"
+          [style.flex]="col.flex ? col.flex : 1"
+          *ngFor="let col of (colDefs$ | async)">
+          {{item[col.key]}}
+        </div>
+      </div>
+      
+    </cdk-virtual-scroll-viewport>
+  </div>
+  </ng-container>
+  
+  <div class="ng-table_empty-message"
+    *ngIf="(items$ | async).length === 0 && !loading">
+    No items found.
+  </div>
+
+  <div class="ng-table_empty-message"
+    *ngIf="loading">
+    <svg class="ng-table_loader"
+      width="66"
+      height="66">
+      <circle
+        fill='none'
+        strokeWidth='6'
+        strokeLinecap='round'
+        cx='33'
+        cy='33'
+        r='30'
+      ></circle>
+    </svg>
   </div>
 </div>

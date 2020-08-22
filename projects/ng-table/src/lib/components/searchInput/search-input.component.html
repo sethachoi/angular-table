@@ -1,0 +1,23 @@
+<div class="ng-table-search_container">
+  <div class="ng-table-search_dropdown-button" uiDropdown>
+    <ng-container
+      *ngIf="filterCol.hasOwnProperty('label')">
+      {{filterCol.label}}
+    </ng-container>
+    <ui-arrow-icon></ui-arrow-icon>
+    <div
+      class="ng-table-search_dropdown-menu"
+      uiDropdownMenu>
+      <div
+        *ngFor="let col of colDefs"
+        class="ng-table-search_dropdown-menu-item"
+        (click)="updateFilterCol(col)">
+        {{col.label}}
+      </div>
+    </div>
+  </div>
+  <input
+    class="ng-table-search_input"
+    placeholder="Search"
+    (input)="searchFilterChanged($event)" />
+</div>

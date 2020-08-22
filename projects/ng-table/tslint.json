@@ -12,10 +12,6 @@
       "element",
       "ui",
       "kebab-case"
-    ],
-    "semicolon": [
-      true,
-      "never"
     ]
   }
 }

@@ -8,22 +8,33 @@
   height: 20px;
   align-items: center;
   justify-content: space-between;
-  flex: 1;
+  flex: 0;
   cursor: pointer;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:not(:first-child) {
     border-left: 1px solid black;
+  }
+
+  &_label {
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    white-space: nowrap;
   }
 
   &_dragger {
     width: 1px;
     height: 100%;
     background-color: black;
-    cursor: ew-resize;
+    cursor: col-resize;
+    margin-left: 24px;
   }
 
   &_actions-container {
     height: 100%;
     display: flex;
+    justify-content: flex-end;
   }
 }

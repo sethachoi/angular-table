@@ -1,17 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Observable } from 'rxjs'
-
-export type SortType = {
-  key: string
-  direction: 'asc' | 'desc'
-}
-
-export type ColType = {
-  key: string
-  label: string
-  flex?: number
-}
+import { ColType, SortType } from './types'
 
 export interface TableState {
   items: any[]
@@ -19,17 +9,47 @@ export interface TableState {
   primaryKey: string
   defaultItems: any[]
   sortRules: SortType[]
+  filterCol: ColType | {}
+  filterString: string
 }
 
 @Injectable()
 export class TableStore extends ComponentStore<TableState> {
   constructor() {
-    super({ items: [], colDefs: [], primaryKey: 'id', defaultItems: [], sortRules: [] })
+    super({
+      items: [],
+      colDefs: [],
+      primaryKey: 'id',
+      defaultItems: [],
+      sortRules: [],
+      filterCol: {},
+      filterString: ''
+    })
   }
 
-  readonly items$: Observable<any[]> = this.select(state => state.items)
+  readonly items$: Observable<any[]> = this.select(state => {
+    const { filterString, filterCol, items } = state
+
+    if (!filterString || !(filterCol as ColType).key) {
+      return items
+    } else {
+      return this.filterItems(filterString, filterCol as ColType, items)
+    }
+  })
   readonly colDefs$: Observable<ColType[]> = this.select(state => state.colDefs)
   readonly sortRules$: Observable<SortType[]> = this.select(state => state.sortRules)
+  readonly filterString$: Observable<string> = this.select(state => state.filterString)
+  readonly filterCol$: Observable<ColType | {}> = this.select(state => state.filterCol)
+
+  readonly setFilterString = this.updater((state, newString: string) => ({
+    ...state,
+    filterString: newString
+  }))
+
+  readonly setFilterCol = this.updater((state, newCol: ColType) => ({
+    ...state,
+    filterCol: { ...newCol }
+  }))
 
   readonly setColDefs = this.updater((state, newCols: ColType[]) => ({
     ...state,
@@ -79,7 +99,7 @@ export class TableStore extends ComponentStore<TableState> {
   })
 
   private resortItems = (itemsToSort: any[], sortRuleList: SortType[]): any[] =>
-    itemsToSort.sort((a, b) => this.compareItems(a, b, sortRuleList, 0))
+    [...itemsToSort].sort((a, b) => this.compareItems(a, b, sortRuleList, 0))
 
   private compareItems = (a: any, b: any, rules: SortType[], ruleIndex: number): number => {
     // if these two objects are identical across all rule filters,
@@ -98,4 +118,16 @@ export class TableStore extends ComponentStore<TableState> {
     }
     return a[currentRule.key] > b[currentRule.key] ? returnVal : -(returnVal)
   }
+
+  private filterItems = (filterString: string, filterCol: ColType, items: any[]) =>
+    items.filter(item => {
+      const testValue = item[filterCol.key]
+      if (filterCol.type === 'number') {
+        return testValue === parseInt(filterString, 10)
+      } else {
+        return testValue.replace(/[^0-9a-z]/gi, '')
+          .toLowerCase()
+          .includes(filterString.replace(/[^0-9a-z]/gi, '').toLowerCase())
+      }
+    })
 }
