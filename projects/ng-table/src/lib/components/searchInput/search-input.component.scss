@@ -1,7 +1,10 @@
 .ng-table-search {
   &_container {
     display: flex;
-    border: 1px solid black;
+    box-shadow:
+      rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,
+      rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,
+      rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
     border-radius: 3px;
     width: fit-content;
     align-items: center;
@@ -12,7 +15,10 @@
     &-menu {
       background-color: white;
       padding: 8px 0;
-      border: 1px solid black;
+      box-shadow:
+        rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,
+        rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
+        rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
       border-radius: 3px;
       display: flex;
       flex-direction: column;
@@ -36,7 +42,7 @@
 
     &-button {
       padding: 8px;
-      border-right: 1px solid black;
+      border-right: 1px solid rgba(224, 224, 224, 1);
       display: flex;
       align-items: center;
       font-family: sans-serif;
@@ -50,7 +56,8 @@
 
       .ng-dropdown-menu {
         position: absolute;
-        top: 32px;
+        top: 100%;
+        margin-top: 4px;
         left: -3px;
         display: block;
         

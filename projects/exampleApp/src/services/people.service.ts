@@ -10,6 +10,7 @@ import { setData, setLoading } from '../state'
 export class PeopleService {
   constructor(private store: Store<PersonType[]>) {}
 
+  // makes a call to our super fake API
   fetchPeople = async () => {
     this.store.dispatch(setLoading({ loading: true }))
     const request = await getData()

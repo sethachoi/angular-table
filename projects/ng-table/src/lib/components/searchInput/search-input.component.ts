@@ -16,9 +16,11 @@ export class SearchInputComponent {
   @Input()
   filterCol: ColType | {}
 
+  // used to emit searchstring
   @Output()
   valueUpdate: EventEmitter<Event> = new EventEmitter()
 
+  // used to emit new col to search/filter by
   @Output()
   colUpdate: EventEmitter<ColType> = new EventEmitter()
 

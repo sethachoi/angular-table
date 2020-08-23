@@ -3,10 +3,10 @@
     "interfaces": [
         {
             "name": "TableState",
-            "id": "interface-TableState-8bdc9e6babdd1496cd5961c0b305c4d7",
+            "id": "interface-TableState-507a0a0eb0a11775da2b70eea40fd12f",
             "file": "projects/ng-table/src/lib/ng-table.store.ts",
             "type": "interface",
-            "sourceCode": "import { Injectable } from '@angular/core'\r\nimport { ComponentStore } from '@ngrx/component-store'\r\nimport { Observable } from 'rxjs'\r\nimport { ColType, SortType } from './types'\r\n\r\nexport interface TableState {\r\n  items: any[]\r\n  colDefs: ColType[]\r\n  primaryKey: string\r\n  defaultItems: any[]\r\n  sortRules: SortType[]\r\n  filterCol: ColType | {}\r\n  filterString: string\r\n}\r\n\r\n@Injectable()\r\nexport class TableStore extends ComponentStore<TableState> {\r\n  constructor() {\r\n    super({\r\n      items: [],\r\n      colDefs: [],\r\n      primaryKey: 'id',\r\n      defaultItems: [],\r\n      sortRules: [],\r\n      filterCol: {},\r\n      filterString: ''\r\n    })\r\n  }\r\n\r\n  readonly items$: Observable<any[]> = this.select(state => {\r\n    const { filterString, filterCol, items } = state\r\n\r\n    if (!filterString || !(filterCol as ColType).key) {\r\n      return items\r\n    } else {\r\n      return this.filterItems(filterString, filterCol as ColType, items)\r\n    }\r\n  })\r\n  readonly colDefs$: Observable<ColType[]> = this.select(state => state.colDefs)\r\n  readonly sortRules$: Observable<SortType[]> = this.select(state => state.sortRules)\r\n  readonly filterString$: Observable<string> = this.select(state => state.filterString)\r\n  readonly filterCol$: Observable<ColType | {}> = this.select(state => state.filterCol)\r\n\r\n  readonly setFilterString = this.updater((state, newString: string) => ({\r\n    ...state,\r\n    filterString: newString\r\n  }))\r\n\r\n  readonly setFilterCol = this.updater((state, newCol: ColType) => ({\r\n    ...state,\r\n    filterCol: { ...newCol }\r\n  }))\r\n\r\n  readonly setColDefs = this.updater((state, newCols: ColType[]) => ({\r\n    ...state,\r\n    colDefs: newCols\r\n  }))\r\n\r\n  readonly setItems = this.updater((state, newItems: any[]) => {\r\n    const { sortRules } = state\r\n\r\n    const newSortedData = this.resortItems(newItems, sortRules)\r\n    return {\r\n      ...state,\r\n      items: newSortedData\r\n    }\r\n  })\r\n\r\n  readonly setDefaultItems = this.updater((state, newDefaults: any[]) => ({\r\n    ...state,\r\n    defaultItems: [...newDefaults]\r\n  }))\r\n\r\n  readonly sortBy = this.updater((state, colKey: string) => {\r\n    const { sortRules, items, defaultItems } = state\r\n    const ruleIndex = sortRules.findIndex(rule => rule.key === colKey)\r\n    let newRules = []\r\n    let newRule = {}\r\n    // case: we are creating a new rule wow\r\n    if (ruleIndex === -1) {\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'asc'\r\n      }\r\n      newRules = [...sortRules, newRule]\r\n    } else if (sortRules[ruleIndex].direction === 'asc') {\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'desc'\r\n      }\r\n      newRules = [...sortRules]\r\n      newRules[ruleIndex] = newRule\r\n    } else {\r\n      newRules = [...sortRules.filter(rule => rule.key !== colKey)]\r\n    }\r\n\r\n    const newItems = newRules.length === 0 ? [...defaultItems] : this.resortItems(items, newRules)\r\n    return {...state, sortRules: newRules, items: newItems}\r\n  })\r\n\r\n  private resortItems = (itemsToSort: any[], sortRuleList: SortType[]): any[] =>\r\n    [...itemsToSort].sort((a, b) => this.compareItems(a, b, sortRuleList, 0))\r\n\r\n  private compareItems = (a: any, b: any, rules: SortType[], ruleIndex: number): number => {\r\n    // if these two objects are identical across all rule filters,\r\n    // we can just return order arbitrarily\r\n    if (ruleIndex >= rules.length) {\r\n      return 1\r\n    }\r\n    const currentRule = rules[ruleIndex]\r\n    const returnVal = currentRule.direction === 'asc' ? 1 : -1\r\n\r\n    // if the compare values are the same, move on to the next sort rule\r\n    // to deal with the tiebreaker, ad infinitum\r\n    if (a[currentRule.key] === b[currentRule.key]) {\r\n      const nextIndex = ruleIndex + 1\r\n      return this.compareItems(a, b, rules, nextIndex)\r\n    }\r\n    return a[currentRule.key] > b[currentRule.key] ? returnVal : -(returnVal)\r\n  }\r\n\r\n  private filterItems = (filterString: string, filterCol: ColType, items: any[]) =>\r\n    items.filter(item => {\r\n      const testValue = item[filterCol.key]\r\n      if (filterCol.type === 'number') {\r\n        return testValue === parseInt(filterString, 10)\r\n      } else {\r\n        return testValue.replace(/[^0-9a-z]/gi, '')\r\n          .toLowerCase()\r\n          .includes(filterString.replace(/[^0-9a-z]/gi, '').toLowerCase())\r\n      }\r\n    })\r\n}\r\n",
+            "sourceCode": "import { Injectable } from '@angular/core'\r\nimport { ComponentStore } from '@ngrx/component-store'\r\nimport { Observable } from 'rxjs'\r\nimport { ColType, SortType } from './types'\r\n\r\nexport interface TableState {\r\n  items: any[]\r\n  colDefs: ColType[]\r\n  primaryKey: string\r\n  defaultItems: any[]\r\n  sortRules: SortType[]\r\n  filterCol: ColType | {}\r\n  filterString: string\r\n}\r\n\r\n@Injectable()\r\nexport class TableStore extends ComponentStore<TableState> {\r\n  constructor() {\r\n    super({\r\n      items: [],\r\n      colDefs: [],\r\n      primaryKey: 'id',\r\n      defaultItems: [],\r\n      sortRules: [],\r\n      filterCol: {},\r\n      filterString: ''\r\n    })\r\n  }\r\n\r\n  // the bread and butter, our table's data\r\n  readonly items$: Observable<any[]> = this.select(state => {\r\n    const { filterString, filterCol, items } = state\r\n\r\n    // we return the whole set if no filters, apply filters if we have them\r\n    if (!filterString || !(filterCol as ColType).key) {\r\n      return items\r\n    } else {\r\n      return this.filterItems(filterString, filterCol as ColType, items)\r\n    }\r\n  })\r\n  // public observables\r\n  readonly colDefs$: Observable<ColType[]> = this.select(state => state.colDefs)\r\n  readonly sortRules$: Observable<SortType[]> = this.select(state => state.sortRules)\r\n  readonly filterString$: Observable<string> = this.select(state => state.filterString)\r\n  readonly filterCol$: Observable<ColType | {}> = this.select(state => state.filterCol)\r\n\r\n  // public full-replace setters\r\n  readonly setFilterString = this.updater((state, newString: string) => ({\r\n    ...state,\r\n    filterString: newString\r\n  }))\r\n\r\n  readonly setFilterCol = this.updater((state, newCol: ColType) => ({\r\n    ...state,\r\n    filterCol: { ...newCol }\r\n  }))\r\n\r\n  readonly setColDefs = this.updater((state, newCols: ColType[]) => ({\r\n    ...state,\r\n    colDefs: newCols\r\n  }))\r\n\r\n  readonly setSortRules = this.updater((state, newSort: SortType[]) => ({\r\n    ...state,\r\n    sortRules: [...newSort]\r\n  }))\r\n\r\n  readonly setItems = this.updater((state, newItems: any[]) => {\r\n    const { sortRules } = state\r\n\r\n    // when new data comes in, be sure to resort the items\r\n    // in case we have sorting rules that need applying\r\n    const newSortedData = this.resortItems(newItems, sortRules)\r\n    return {\r\n      ...state,\r\n      items: newSortedData\r\n    }\r\n  })\r\n\r\n  readonly setDefaultItems = this.updater((state, newDefaults: any[]) => ({\r\n    ...state,\r\n    defaultItems: [...newDefaults]\r\n  }))\r\n\r\n  // public method to apply a sort rule simply by passing the colkey\r\n  // (for example, 'id' or 'name')\r\n  readonly sortBy = this.updater((state, colKey: string) => {\r\n    const { sortRules, items, defaultItems } = state\r\n    const ruleIndex = sortRules.findIndex(rule => rule.key === colKey)\r\n    let newRules = []\r\n    let newRule = {}\r\n    // case: we are creating a new rule wow\r\n    if (ruleIndex === -1) {\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'asc'\r\n      }\r\n      newRules = [...sortRules, newRule]\r\n    } else if (sortRules[ruleIndex].direction === 'asc') {\r\n      // if there exists a rule for this key, and it is asc, swap to desc\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'desc'\r\n      }\r\n      newRules = [...sortRules]\r\n      newRules[ruleIndex] = newRule\r\n    } else {\r\n      // if the existing rule is desc, we want to just remove the rule altogether\r\n      newRules = [...sortRules.filter(rule => rule.key !== colKey)]\r\n    }\r\n\r\n    // if we have just removed all of our sorting rules, let's bring it back to the default view,\r\n    // AKA the order of data we got from the API\r\n    const newItems = newRules.length === 0 ? [...defaultItems] : this.resortItems(items, newRules)\r\n    return {...state, sortRules: newRules, items: newItems}\r\n  })\r\n\r\n  // start sorting recursion algo\r\n  private resortItems = (itemsToSort: any[], sortRuleList: SortType[]): any[] =>\r\n    [...itemsToSort].sort((a, b) => this.compareItems(a, b, sortRuleList, 0))\r\n\r\n  private compareItems = (a: any, b: any, rules: SortType[], ruleIndex: number): number => {\r\n    // if these two objects are identical across all rule filters,\r\n    // we can just return order arbitrarily\r\n    if (ruleIndex >= rules.length) {\r\n      return 1\r\n    }\r\n    const currentRule = rules[ruleIndex]\r\n    const returnVal = currentRule.direction === 'asc' ? 1 : -1\r\n\r\n    // if the compare values are the same, move on to the next sort rule\r\n    // to deal with the tiebreaker, ad infinitum\r\n    if (a[currentRule.key] === b[currentRule.key]) {\r\n      const nextIndex = ruleIndex + 1\r\n      return this.compareItems(a, b, rules, nextIndex)\r\n    }\r\n    return a[currentRule.key] > b[currentRule.key] ? returnVal : -(returnVal)\r\n  }\r\n\r\n  // here we apply a filterString + filterCol ruleset\r\n  private filterItems = (filterString: string, filterCol: ColType, items: any[]) =>\r\n    items.filter(item => {\r\n      const testValue = item[filterCol.key]\r\n      // we are looking for the exact number if given a number type\r\n      if (filterCol.type === 'number') {\r\n        return testValue === parseInt(filterString, 10)\r\n      } else {\r\n        // if we are given a string type, look to see if that order of chars exists\r\n        // anywhere each entry, disregarding spacing or letter case\r\n        return testValue.replace(/[^0-9a-z]/gi, '')\r\n          .toLowerCase()\r\n          .includes(filterString.replace(/[^0-9a-z]/gi, '').toLowerCase())\r\n      }\r\n    })\r\n}\r\n",
             "properties": [
                 {
                     "name": "colDefs",
@@ -66,7 +66,7 @@
     "injectables": [
         {
             "name": "PeopleService",
-            "id": "injectable-PeopleService-9bf55c8d4c604cc04544f708bf1178ca",
+            "id": "injectable-PeopleService-9e7448245da015349cd223530efa888c",
             "file": "projects/exampleApp/src/services/people.service.ts",
             "properties": [
                 {
@@ -75,12 +75,12 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 13
+                    "line": 14
                 }
             ],
             "methods": [],
             "description": "",
-            "sourceCode": "import { Injectable } from '@angular/core'\r\nimport { Store } from '@ngrx/store'\r\nimport { PersonType } from '../types'\r\nimport { getData } from '../api'\r\nimport { setData } from '../state/state.actions'\r\n\r\n@Injectable({\r\n  providedIn: 'root'\r\n})\r\nexport class PeopleService {\r\n  constructor(private store: Store<PersonType[]>) {}\r\n\r\n  fetchPeople = async () => {\r\n    const request = await getData()\r\n    this.store.dispatch(setData(request))\r\n  }\r\n}\r\n",
+            "sourceCode": "import { Injectable } from '@angular/core'\r\nimport { Store } from '@ngrx/store'\r\nimport { PersonType } from '../types'\r\nimport { getData } from '../api'\r\nimport { setData, setLoading } from '../state'\r\n\r\n@Injectable({\r\n  providedIn: 'root'\r\n})\r\nexport class PeopleService {\r\n  constructor(private store: Store<PersonType[]>) {}\r\n\r\n  // makes a call to our super fake API\r\n  fetchPeople = async () => {\r\n    this.store.dispatch(setLoading({ loading: true }))\r\n    const request = await getData()\r\n    this.store.dispatch(setData(request))\r\n    this.store.dispatch(setLoading({ loading: false }))\r\n  }\r\n}\r\n",
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
@@ -104,8 +104,71 @@
             "type": "injectable"
         },
         {
+            "name": "QueryFilterService",
+            "id": "injectable-QueryFilterService-abbd00df8096b65b9052bbd79bcf2fae",
+            "file": "projects/exampleApp/src/services/queryFilter.service.ts",
+            "properties": [
+                {
+                    "name": "applyQueryFilters",
+                    "defaultValue": "() => {...}",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 12
+                },
+                {
+                    "name": "decodeQueryFilters",
+                    "defaultValue": "() => {...}",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 30
+                },
+                {
+                    "name": "getQueryFilters",
+                    "defaultValue": "() => {...}",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 45
+                },
+                {
+                    "name": "setQueryFilter",
+                    "defaultValue": "() => {...}",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 40,
+                    "modifierKind": [
+                        112
+                    ]
+                },
+                {
+                    "name": "sortFilters",
+                    "defaultValue": "[]",
+                    "type": "SortType[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 8,
+                    "modifierKind": [
+                        112
+                    ]
+                }
+            ],
+            "methods": [],
+            "description": "",
+            "sourceCode": "import { Injectable } from '@angular/core'\r\nimport { SortType } from 'ng-table'\r\n\r\n@Injectable({\r\n  providedIn: 'root'\r\n})\r\nexport class QueryFilterService {\r\n  private sortFilters: SortType[] = []\r\n  constructor() {}\r\n\r\n  // this will convert our sort obj to push a querystring to window url\r\n  applyQueryFilters = async (filterItems: SortType[]) => {\r\n    this.setQueryFilter(filterItems)\r\n    // sending back empty filters is a valid new state\r\n    let newUrl = window.location.protocol\r\n      + '//' + window.location.host + window.location.pathname\r\n\r\n    if (filterItems.length) {\r\n      const params = new URLSearchParams()\r\n      filterItems.forEach(filter => {\r\n        params.set(filter.key, filter.direction)\r\n      })\r\n      newUrl = `${newUrl}?${params.toString()}`\r\n    }\r\n\r\n    window.history.pushState({path: newUrl}, '', newUrl)\r\n  }\r\n\r\n  // we also will need to convert our URL query params into digestible SortTypes\r\n  decodeQueryFilters = (): SortType[] => {\r\n    const params = new URLSearchParams(window.location.search)\r\n    const newSortFilters = []\r\n    params.forEach((value, key) => {\r\n      newSortFilters.push({ key, direction: value })\r\n    })\r\n    this.setQueryFilter(newSortFilters)\r\n    return newSortFilters\r\n  }\r\n\r\n  private setQueryFilter = (newFilters: SortType[]) => {\r\n    this.sortFilters = [...newFilters]\r\n  }\r\n\r\n  // public api\r\n  getQueryFilters = (): SortType[] => {\r\n    return this.sortFilters as SortType[]\r\n  }\r\n}\r\n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "type": "injectable"
+        },
+        {
             "name": "TableStore",
-            "id": "injectable-TableStore-8bdc9e6babdd1496cd5961c0b305c4d7",
+            "id": "injectable-TableStore-507a0a0eb0a11775da2b70eea40fd12f",
             "file": "projects/ng-table/src/lib/ng-table.store.ts",
             "properties": [
                 {
@@ -114,7 +177,7 @@
                     "type": "Observable<ColType[]>",
                     "optional": false,
                     "description": "",
-                    "line": 39,
+                    "line": 42,
                     "modifierKind": [
                         132
                     ]
@@ -125,7 +188,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 104,
+                    "line": 122,
                     "modifierKind": [
                         112
                     ]
@@ -136,7 +199,7 @@
                     "type": "Observable<ColType | literal type>",
                     "optional": false,
                     "description": "",
-                    "line": 42,
+                    "line": 45,
                     "modifierKind": [
                         132
                     ]
@@ -147,7 +210,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 122,
+                    "line": 141,
                     "modifierKind": [
                         112
                     ]
@@ -158,18 +221,18 @@
                     "type": "Observable<string>",
                     "optional": false,
                     "description": "",
-                    "line": 41,
+                    "line": 44,
                     "modifierKind": [
                         132
                     ]
                 },
                 {
                     "name": "items$",
-                    "defaultValue": "this.select(state => {\r\n    const { filterString, filterCol, items } = state\r\n\r\n    if (!filterString || !(filterCol as ColType).key) {\r\n      return items\r\n    } else {\r\n      return this.filterItems(filterString, filterCol as ColType, items)\r\n    }\r\n  })",
+                    "defaultValue": "this.select(state => {\r\n    const { filterString, filterCol, items } = state\r\n\r\n    // we return the whole set if no filters, apply filters if we have them\r\n    if (!filterString || !(filterCol as ColType).key) {\r\n      return items\r\n    } else {\r\n      return this.filterItems(filterString, filterCol as ColType, items)\r\n    }\r\n  })",
                     "type": "Observable<any[]>",
                     "optional": false,
                     "description": "",
-                    "line": 30,
+                    "line": 31,
                     "modifierKind": [
                         132
                     ]
@@ -180,7 +243,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 101,
+                    "line": 119,
                     "modifierKind": [
                         112
                     ]
@@ -191,7 +254,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 54,
+                    "line": 58,
                     "modifierKind": [
                         132
                     ]
@@ -202,7 +265,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 69,
+                    "line": 80,
                     "modifierKind": [
                         132
                     ]
@@ -213,7 +276,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 49,
+                    "line": 53,
                     "modifierKind": [
                         132
                     ]
@@ -224,29 +287,40 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 44,
+                    "line": 48,
                     "modifierKind": [
                         132
                     ]
                 },
                 {
                     "name": "setItems",
-                    "defaultValue": "this.updater((state, newItems: any[]) => {\r\n    const { sortRules } = state\r\n\r\n    const newSortedData = this.resortItems(newItems, sortRules)\r\n    return {\r\n      ...state,\r\n      items: newSortedData\r\n    }\r\n  })",
+                    "defaultValue": "this.updater((state, newItems: any[]) => {\r\n    const { sortRules } = state\r\n\r\n    // when new data comes in, be sure to resort the items\r\n    // in case we have sorting rules that need applying\r\n    const newSortedData = this.resortItems(newItems, sortRules)\r\n    return {\r\n      ...state,\r\n      items: newSortedData\r\n    }\r\n  })",
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 59,
+                    "line": 68,
+                    "modifierKind": [
+                        132
+                    ]
+                },
+                {
+                    "name": "setSortRules",
+                    "defaultValue": "this.updater((state, newSort: SortType[]) => ({\r\n    ...state,\r\n    sortRules: [...newSort]\r\n  }))",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 63,
                     "modifierKind": [
                         132
                     ]
                 },
                 {
                     "name": "sortBy",
-                    "defaultValue": "this.updater((state, colKey: string) => {\r\n    const { sortRules, items, defaultItems } = state\r\n    const ruleIndex = sortRules.findIndex(rule => rule.key === colKey)\r\n    let newRules = []\r\n    let newRule = {}\r\n    // case: we are creating a new rule wow\r\n    if (ruleIndex === -1) {\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'asc'\r\n      }\r\n      newRules = [...sortRules, newRule]\r\n    } else if (sortRules[ruleIndex].direction === 'asc') {\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'desc'\r\n      }\r\n      newRules = [...sortRules]\r\n      newRules[ruleIndex] = newRule\r\n    } else {\r\n      newRules = [...sortRules.filter(rule => rule.key !== colKey)]\r\n    }\r\n\r\n    const newItems = newRules.length === 0 ? [...defaultItems] : this.resortItems(items, newRules)\r\n    return {...state, sortRules: newRules, items: newItems}\r\n  })",
+                    "defaultValue": "this.updater((state, colKey: string) => {\r\n    const { sortRules, items, defaultItems } = state\r\n    const ruleIndex = sortRules.findIndex(rule => rule.key === colKey)\r\n    let newRules = []\r\n    let newRule = {}\r\n    // case: we are creating a new rule wow\r\n    if (ruleIndex === -1) {\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'asc'\r\n      }\r\n      newRules = [...sortRules, newRule]\r\n    } else if (sortRules[ruleIndex].direction === 'asc') {\r\n      // if there exists a rule for this key, and it is asc, swap to desc\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'desc'\r\n      }\r\n      newRules = [...sortRules]\r\n      newRules[ruleIndex] = newRule\r\n    } else {\r\n      // if the existing rule is desc, we want to just remove the rule altogether\r\n      newRules = [...sortRules.filter(rule => rule.key !== colKey)]\r\n    }\r\n\r\n    // if we have just removed all of our sorting rules, let's bring it back to the default view,\r\n    // AKA the order of data we got from the API\r\n    const newItems = newRules.length === 0 ? [...defaultItems] : this.resortItems(items, newRules)\r\n    return {...state, sortRules: newRules, items: newItems}\r\n  })",
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 74,
+                    "line": 87,
                     "modifierKind": [
                         132
                     ]
@@ -257,7 +331,7 @@
                     "type": "Observable<SortType[]>",
                     "optional": false,
                     "description": "",
-                    "line": 40,
+                    "line": 43,
                     "modifierKind": [
                         132
                     ]
@@ -265,7 +339,7 @@
             ],
             "methods": [],
             "description": "",
-            "sourceCode": "import { Injectable } from '@angular/core'\r\nimport { ComponentStore } from '@ngrx/component-store'\r\nimport { Observable } from 'rxjs'\r\nimport { ColType, SortType } from './types'\r\n\r\nexport interface TableState {\r\n  items: any[]\r\n  colDefs: ColType[]\r\n  primaryKey: string\r\n  defaultItems: any[]\r\n  sortRules: SortType[]\r\n  filterCol: ColType | {}\r\n  filterString: string\r\n}\r\n\r\n@Injectable()\r\nexport class TableStore extends ComponentStore<TableState> {\r\n  constructor() {\r\n    super({\r\n      items: [],\r\n      colDefs: [],\r\n      primaryKey: 'id',\r\n      defaultItems: [],\r\n      sortRules: [],\r\n      filterCol: {},\r\n      filterString: ''\r\n    })\r\n  }\r\n\r\n  readonly items$: Observable<any[]> = this.select(state => {\r\n    const { filterString, filterCol, items } = state\r\n\r\n    if (!filterString || !(filterCol as ColType).key) {\r\n      return items\r\n    } else {\r\n      return this.filterItems(filterString, filterCol as ColType, items)\r\n    }\r\n  })\r\n  readonly colDefs$: Observable<ColType[]> = this.select(state => state.colDefs)\r\n  readonly sortRules$: Observable<SortType[]> = this.select(state => state.sortRules)\r\n  readonly filterString$: Observable<string> = this.select(state => state.filterString)\r\n  readonly filterCol$: Observable<ColType | {}> = this.select(state => state.filterCol)\r\n\r\n  readonly setFilterString = this.updater((state, newString: string) => ({\r\n    ...state,\r\n    filterString: newString\r\n  }))\r\n\r\n  readonly setFilterCol = this.updater((state, newCol: ColType) => ({\r\n    ...state,\r\n    filterCol: { ...newCol }\r\n  }))\r\n\r\n  readonly setColDefs = this.updater((state, newCols: ColType[]) => ({\r\n    ...state,\r\n    colDefs: newCols\r\n  }))\r\n\r\n  readonly setItems = this.updater((state, newItems: any[]) => {\r\n    const { sortRules } = state\r\n\r\n    const newSortedData = this.resortItems(newItems, sortRules)\r\n    return {\r\n      ...state,\r\n      items: newSortedData\r\n    }\r\n  })\r\n\r\n  readonly setDefaultItems = this.updater((state, newDefaults: any[]) => ({\r\n    ...state,\r\n    defaultItems: [...newDefaults]\r\n  }))\r\n\r\n  readonly sortBy = this.updater((state, colKey: string) => {\r\n    const { sortRules, items, defaultItems } = state\r\n    const ruleIndex = sortRules.findIndex(rule => rule.key === colKey)\r\n    let newRules = []\r\n    let newRule = {}\r\n    // case: we are creating a new rule wow\r\n    if (ruleIndex === -1) {\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'asc'\r\n      }\r\n      newRules = [...sortRules, newRule]\r\n    } else if (sortRules[ruleIndex].direction === 'asc') {\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'desc'\r\n      }\r\n      newRules = [...sortRules]\r\n      newRules[ruleIndex] = newRule\r\n    } else {\r\n      newRules = [...sortRules.filter(rule => rule.key !== colKey)]\r\n    }\r\n\r\n    const newItems = newRules.length === 0 ? [...defaultItems] : this.resortItems(items, newRules)\r\n    return {...state, sortRules: newRules, items: newItems}\r\n  })\r\n\r\n  private resortItems = (itemsToSort: any[], sortRuleList: SortType[]): any[] =>\r\n    [...itemsToSort].sort((a, b) => this.compareItems(a, b, sortRuleList, 0))\r\n\r\n  private compareItems = (a: any, b: any, rules: SortType[], ruleIndex: number): number => {\r\n    // if these two objects are identical across all rule filters,\r\n    // we can just return order arbitrarily\r\n    if (ruleIndex >= rules.length) {\r\n      return 1\r\n    }\r\n    const currentRule = rules[ruleIndex]\r\n    const returnVal = currentRule.direction === 'asc' ? 1 : -1\r\n\r\n    // if the compare values are the same, move on to the next sort rule\r\n    // to deal with the tiebreaker, ad infinitum\r\n    if (a[currentRule.key] === b[currentRule.key]) {\r\n      const nextIndex = ruleIndex + 1\r\n      return this.compareItems(a, b, rules, nextIndex)\r\n    }\r\n    return a[currentRule.key] > b[currentRule.key] ? returnVal : -(returnVal)\r\n  }\r\n\r\n  private filterItems = (filterString: string, filterCol: ColType, items: any[]) =>\r\n    items.filter(item => {\r\n      const testValue = item[filterCol.key]\r\n      if (filterCol.type === 'number') {\r\n        return testValue === parseInt(filterString, 10)\r\n      } else {\r\n        return testValue.replace(/[^0-9a-z]/gi, '')\r\n          .toLowerCase()\r\n          .includes(filterString.replace(/[^0-9a-z]/gi, '').toLowerCase())\r\n      }\r\n    })\r\n}\r\n",
+            "sourceCode": "import { Injectable } from '@angular/core'\r\nimport { ComponentStore } from '@ngrx/component-store'\r\nimport { Observable } from 'rxjs'\r\nimport { ColType, SortType } from './types'\r\n\r\nexport interface TableState {\r\n  items: any[]\r\n  colDefs: ColType[]\r\n  primaryKey: string\r\n  defaultItems: any[]\r\n  sortRules: SortType[]\r\n  filterCol: ColType | {}\r\n  filterString: string\r\n}\r\n\r\n@Injectable()\r\nexport class TableStore extends ComponentStore<TableState> {\r\n  constructor() {\r\n    super({\r\n      items: [],\r\n      colDefs: [],\r\n      primaryKey: 'id',\r\n      defaultItems: [],\r\n      sortRules: [],\r\n      filterCol: {},\r\n      filterString: ''\r\n    })\r\n  }\r\n\r\n  // the bread and butter, our table's data\r\n  readonly items$: Observable<any[]> = this.select(state => {\r\n    const { filterString, filterCol, items } = state\r\n\r\n    // we return the whole set if no filters, apply filters if we have them\r\n    if (!filterString || !(filterCol as ColType).key) {\r\n      return items\r\n    } else {\r\n      return this.filterItems(filterString, filterCol as ColType, items)\r\n    }\r\n  })\r\n  // public observables\r\n  readonly colDefs$: Observable<ColType[]> = this.select(state => state.colDefs)\r\n  readonly sortRules$: Observable<SortType[]> = this.select(state => state.sortRules)\r\n  readonly filterString$: Observable<string> = this.select(state => state.filterString)\r\n  readonly filterCol$: Observable<ColType | {}> = this.select(state => state.filterCol)\r\n\r\n  // public full-replace setters\r\n  readonly setFilterString = this.updater((state, newString: string) => ({\r\n    ...state,\r\n    filterString: newString\r\n  }))\r\n\r\n  readonly setFilterCol = this.updater((state, newCol: ColType) => ({\r\n    ...state,\r\n    filterCol: { ...newCol }\r\n  }))\r\n\r\n  readonly setColDefs = this.updater((state, newCols: ColType[]) => ({\r\n    ...state,\r\n    colDefs: newCols\r\n  }))\r\n\r\n  readonly setSortRules = this.updater((state, newSort: SortType[]) => ({\r\n    ...state,\r\n    sortRules: [...newSort]\r\n  }))\r\n\r\n  readonly setItems = this.updater((state, newItems: any[]) => {\r\n    const { sortRules } = state\r\n\r\n    // when new data comes in, be sure to resort the items\r\n    // in case we have sorting rules that need applying\r\n    const newSortedData = this.resortItems(newItems, sortRules)\r\n    return {\r\n      ...state,\r\n      items: newSortedData\r\n    }\r\n  })\r\n\r\n  readonly setDefaultItems = this.updater((state, newDefaults: any[]) => ({\r\n    ...state,\r\n    defaultItems: [...newDefaults]\r\n  }))\r\n\r\n  // public method to apply a sort rule simply by passing the colkey\r\n  // (for example, 'id' or 'name')\r\n  readonly sortBy = this.updater((state, colKey: string) => {\r\n    const { sortRules, items, defaultItems } = state\r\n    const ruleIndex = sortRules.findIndex(rule => rule.key === colKey)\r\n    let newRules = []\r\n    let newRule = {}\r\n    // case: we are creating a new rule wow\r\n    if (ruleIndex === -1) {\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'asc'\r\n      }\r\n      newRules = [...sortRules, newRule]\r\n    } else if (sortRules[ruleIndex].direction === 'asc') {\r\n      // if there exists a rule for this key, and it is asc, swap to desc\r\n      newRule = {\r\n        key: colKey,\r\n        direction: 'desc'\r\n      }\r\n      newRules = [...sortRules]\r\n      newRules[ruleIndex] = newRule\r\n    } else {\r\n      // if the existing rule is desc, we want to just remove the rule altogether\r\n      newRules = [...sortRules.filter(rule => rule.key !== colKey)]\r\n    }\r\n\r\n    // if we have just removed all of our sorting rules, let's bring it back to the default view,\r\n    // AKA the order of data we got from the API\r\n    const newItems = newRules.length === 0 ? [...defaultItems] : this.resortItems(items, newRules)\r\n    return {...state, sortRules: newRules, items: newItems}\r\n  })\r\n\r\n  // start sorting recursion algo\r\n  private resortItems = (itemsToSort: any[], sortRuleList: SortType[]): any[] =>\r\n    [...itemsToSort].sort((a, b) => this.compareItems(a, b, sortRuleList, 0))\r\n\r\n  private compareItems = (a: any, b: any, rules: SortType[], ruleIndex: number): number => {\r\n    // if these two objects are identical across all rule filters,\r\n    // we can just return order arbitrarily\r\n    if (ruleIndex >= rules.length) {\r\n      return 1\r\n    }\r\n    const currentRule = rules[ruleIndex]\r\n    const returnVal = currentRule.direction === 'asc' ? 1 : -1\r\n\r\n    // if the compare values are the same, move on to the next sort rule\r\n    // to deal with the tiebreaker, ad infinitum\r\n    if (a[currentRule.key] === b[currentRule.key]) {\r\n      const nextIndex = ruleIndex + 1\r\n      return this.compareItems(a, b, rules, nextIndex)\r\n    }\r\n    return a[currentRule.key] > b[currentRule.key] ? returnVal : -(returnVal)\r\n  }\r\n\r\n  // here we apply a filterString + filterCol ruleset\r\n  private filterItems = (filterString: string, filterCol: ColType, items: any[]) =>\r\n    items.filter(item => {\r\n      const testValue = item[filterCol.key]\r\n      // we are looking for the exact number if given a number type\r\n      if (filterCol.type === 'number') {\r\n        return testValue === parseInt(filterString, 10)\r\n      } else {\r\n        // if we are given a string type, look to see if that order of chars exists\r\n        // anywhere each entry, disregarding spacing or letter case\r\n        return testValue.replace(/[^0-9a-z]/gi, '')\r\n          .toLowerCase()\r\n          .includes(filterString.replace(/[^0-9a-z]/gi, '').toLowerCase())\r\n      }\r\n    })\r\n}\r\n",
             "constructorObj": {
                 "name": "constructor",
                 "description": "",
@@ -279,10 +353,10 @@
     "classes": [
         {
             "name": "AppPage",
-            "id": "class-AppPage-a0db91bfa3b9914e9048612074084ee6",
+            "id": "class-AppPage-05ed137bad54aa682bf8c4b1971cd0c0",
             "file": "projects/exampleApp/e2e/src/app.po.ts",
             "type": "class",
-            "sourceCode": "import { browser, by, element } from 'protractor';\n\nexport class AppPage {\n  navigateTo(): Promise<unknown> {\n    return browser.get(browser.baseUrl) as Promise<unknown>;\n  }\n\n  getTitleText(): Promise<string> {\n    return element(by.css('app-root .content span')).getText() as Promise<string>;\n  }\n}\n",
+            "sourceCode": "import { browser, by, element } from 'protractor'\n\nexport class AppPage {\n  navigateTo(): Promise<unknown> {\n    return browser.get(browser.baseUrl) as Promise<unknown>\n  }\n\n  getTitleText(): Promise<string> {\n    return element(by.css('app-root .content span')).getText() as Promise<string>\n  }\n}\n",
             "properties": [],
             "methods": [
                 {
@@ -312,11 +386,11 @@
     "directives": [
         {
             "name": "DropdownDirective",
-            "id": "directive-DropdownDirective-a60822cd10cd33f3193b0f5f1d02c4fb",
+            "id": "directive-DropdownDirective-b388c614617c149e41537248f7c8a068",
             "file": "projects/ng-table/src/lib/components/searchInput/directives/dropdownDirective/index.ts",
             "type": "directive",
             "description": "",
-            "sourceCode": "import { Directive, ElementRef, Inject, forwardRef, HostBinding, HostListener } from '@angular/core'\r\n\r\n@Directive({\r\n  selector: '[uiDropdownMenu]'\r\n})\r\nexport class DropdownMenuDirective {\r\n  constructor(@Inject(forwardRef(() => DropdownDirective)) public dropdown) {}\r\n  @HostBinding('class.ng-dropdown-menu') menuClass = true\r\n  @HostBinding('class.showing')\r\n  get isShowing(): boolean { return this.dropdown.isShowing() }\r\n  @HostBinding('class.hiding')\r\n  get isHiding(): boolean { return !this.dropdown.isShowing() }\r\n}\r\n\r\n@Directive({\r\n  selector: '[uiDropdown]'\r\n})\r\nexport class DropdownDirective {\r\n  showing = false\r\n  constructor(private el: ElementRef) {}\r\n\r\n  @HostListener('click')\r\n  toggle = (): void => {\r\n    this.showing = !this.showing\r\n  }\r\n\r\n  isShowing = (): boolean => {\r\n    return this.showing\r\n  }\r\n}",
+            "sourceCode": "import { Directive, ElementRef, Inject, forwardRef, HostBinding, HostListener } from '@angular/core'\r\n\r\n@Directive({\r\n  selector: '[uiDropdownMenu]'\r\n})\r\nexport class DropdownMenuDirective {\r\n  constructor(@Inject(forwardRef(() => DropdownDirective)) public dropdown) {}\r\n  @HostBinding('class.ng-dropdown-menu') menuClass = true\r\n\r\n  // attaching showing class via our controlling directive's bool\r\n  @HostBinding('class.showing')\r\n  get isShowing(): boolean { return this.dropdown.isShowing() }\r\n\r\n  // same with hiding (mostly useful for animation overrides)\r\n  @HostBinding('class.hiding')\r\n  get isHiding(): boolean { return !this.dropdown.isShowing() }\r\n}\r\n\r\n@Directive({\r\n  selector: '[uiDropdown]'\r\n})\r\nexport class DropdownDirective {\r\n  showing = false\r\n  constructor(private el: ElementRef) {}\r\n\r\n  // click handler to toggle dropdown\r\n  @HostListener('click')\r\n  toggle = (): void => {\r\n    this.showing = !this.showing\r\n  }\r\n\r\n  isShowing = (): boolean => {\r\n    return this.showing\r\n  }\r\n}\r\n",
             "selector": "[uiDropdown]",
             "providers": [],
             "inputsClass": [],
@@ -327,7 +401,7 @@
                     "name": "click",
                     "args": [],
                     "argsDecorator": [],
-                    "line": 23
+                    "line": 28
                 }
             ],
             "propertiesClass": [
@@ -337,7 +411,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 27
+                    "line": 32
                 },
                 {
                     "name": "showing",
@@ -345,7 +419,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 19
+                    "line": 23
                 }
             ],
             "methodsClass": [],
@@ -358,7 +432,7 @@
                         "type": "ElementRef"
                     }
                 ],
-                "line": 19,
+                "line": 23,
                 "jsdoctags": [
                     {
                         "name": "el",
@@ -372,11 +446,11 @@
         },
         {
             "name": "DropdownMenuDirective",
-            "id": "directive-DropdownMenuDirective-a60822cd10cd33f3193b0f5f1d02c4fb",
+            "id": "directive-DropdownMenuDirective-b388c614617c149e41537248f7c8a068",
             "file": "projects/ng-table/src/lib/components/searchInput/directives/dropdownDirective/index.ts",
             "type": "directive",
             "description": "",
-            "sourceCode": "import { Directive, ElementRef, Inject, forwardRef, HostBinding, HostListener } from '@angular/core'\r\n\r\n@Directive({\r\n  selector: '[uiDropdownMenu]'\r\n})\r\nexport class DropdownMenuDirective {\r\n  constructor(@Inject(forwardRef(() => DropdownDirective)) public dropdown) {}\r\n  @HostBinding('class.ng-dropdown-menu') menuClass = true\r\n  @HostBinding('class.showing')\r\n  get isShowing(): boolean { return this.dropdown.isShowing() }\r\n  @HostBinding('class.hiding')\r\n  get isHiding(): boolean { return !this.dropdown.isShowing() }\r\n}\r\n\r\n@Directive({\r\n  selector: '[uiDropdown]'\r\n})\r\nexport class DropdownDirective {\r\n  showing = false\r\n  constructor(private el: ElementRef) {}\r\n\r\n  @HostListener('click')\r\n  toggle = (): void => {\r\n    this.showing = !this.showing\r\n  }\r\n\r\n  isShowing = (): boolean => {\r\n    return this.showing\r\n  }\r\n}",
+            "sourceCode": "import { Directive, ElementRef, Inject, forwardRef, HostBinding, HostListener } from '@angular/core'\r\n\r\n@Directive({\r\n  selector: '[uiDropdownMenu]'\r\n})\r\nexport class DropdownMenuDirective {\r\n  constructor(@Inject(forwardRef(() => DropdownDirective)) public dropdown) {}\r\n  @HostBinding('class.ng-dropdown-menu') menuClass = true\r\n\r\n  // attaching showing class via our controlling directive's bool\r\n  @HostBinding('class.showing')\r\n  get isShowing(): boolean { return this.dropdown.isShowing() }\r\n\r\n  // same with hiding (mostly useful for animation overrides)\r\n  @HostBinding('class.hiding')\r\n  get isHiding(): boolean { return !this.dropdown.isShowing() }\r\n}\r\n\r\n@Directive({\r\n  selector: '[uiDropdown]'\r\n})\r\nexport class DropdownDirective {\r\n  showing = false\r\n  constructor(private el: ElementRef) {}\r\n\r\n  // click handler to toggle dropdown\r\n  @HostListener('click')\r\n  toggle = (): void => {\r\n    this.showing = !this.showing\r\n  }\r\n\r\n  isShowing = (): boolean => {\r\n    return this.showing\r\n  }\r\n}\r\n",
             "selector": "[uiDropdownMenu]",
             "providers": [],
             "inputsClass": [],
@@ -384,7 +458,7 @@
             "hostBindings": [
                 {
                     "name": "class.hiding",
-                    "line": 12,
+                    "line": 16,
                     "type": "boolean"
                 },
                 {
@@ -394,7 +468,7 @@
                 },
                 {
                     "name": "class.showing",
-                    "line": 10,
+                    "line": 12,
                     "type": "boolean"
                 }
             ],
@@ -443,7 +517,7 @@
     "components": [
         {
             "name": "AppComponent",
-            "id": "component-AppComponent-7cc47fa80dba739c1f463a798275269d",
+            "id": "component-AppComponent-0ee5395411e6e63e7bfa152e80b466b7",
             "file": "projects/exampleApp/src/app/app.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -468,7 +542,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 16
+                    "line": 18
                 },
                 {
                     "name": "fetchData",
@@ -476,22 +550,37 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 25
+                    "line": 41
                 },
                 {
-                    "name": "loading",
-                    "defaultValue": "false",
-                    "type": "",
+                    "name": "loading$",
+                    "type": "Observable<boolean>",
                     "optional": false,
                     "description": "",
-                    "line": 15
+                    "line": 16
                 },
                 {
                     "name": "people$",
                     "type": "Observable<PersonType[]>",
                     "optional": false,
                     "description": "",
-                    "line": 14
+                    "line": 15
+                },
+                {
+                    "name": "receiveFilters",
+                    "defaultValue": "() => {...}",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 36
+                },
+                {
+                    "name": "sortFilters",
+                    "defaultValue": "[]",
+                    "type": "SortType[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 17
                 }
             ],
             "methodsClass": [],
@@ -500,11 +589,11 @@
             "description": "",
             "rawdescription": "",
             "type": "component",
-            "sourceCode": "import { Component } from '@angular/core'\nimport { Store, select } from '@ngrx/store'\nimport { Observable } from 'rxjs'\nimport { PeopleService } from '../services'\nimport { PersonType } from '../types'\nimport { colDefs } from '../data'\n\n@Component({\n  selector: 'app-root',\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.scss']\n})\nexport class AppComponent {\n  people$: Observable<PersonType[]>\n  loading = false\n  colDefs = colDefs\n\n  constructor(\n    private peopleService: PeopleService,\n    private store: Store<{ people: PersonType[] }>\n  ) {\n    this.people$ = store.pipe(select('people'))\n  }\n\n  fetchData = () => {\n    console.log('fetching')\n    this.loading = true\n    this.peopleService.fetchPeople()\n    this.loading = false\n  }\n}\n",
+            "sourceCode": "import { Component } from '@angular/core'\nimport { Store, select } from '@ngrx/store'\nimport { Observable } from 'rxjs'\nimport { SortType } from 'ng-table'\nimport { PeopleService, QueryFilterService } from '../services'\nimport { PersonType } from '../types'\nimport { colDefs } from '../data'\n\n@Component({\n  selector: 'app-root',\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.scss']\n})\nexport class AppComponent {\n  people$: Observable<PersonType[]>\n  loading$: Observable<boolean>\n  sortFilters: SortType[] = []\n  colDefs = colDefs\n\n  constructor(\n    private peopleService: PeopleService,\n    private queryFilterService: QueryFilterService,\n    private store: Store<{ people: PersonType[], loading: boolean }>\n  ) {\n    this.people$ = store.pipe(select('people'))\n    this.loading$ = store.pipe(select('loading'))\n    // we really only need to do this upon first load tbh;\n    // we are snagging all the query params and matching them\n    // with columns that actually exist on our table\n    const validKeys = colDefs.map(item => item.key)\n    this.sortFilters =\n      [...this.queryFilterService.getQueryFilters().filter((item) => validKeys.includes(item.key))]\n  }\n\n  // table will emit filters at us, we need to pop it to service so we can add to url\n  receiveFilters = (sortFilters: SortType[]) => {\n    this.queryFilterService.applyQueryFilters(sortFilters)\n  }\n\n  // press butan\n  fetchData = () => {\n    this.peopleService.fetchPeople()\n  }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": ".content {\r\n  display: flex;\r\n  height: 100vh;\r\n  width: 100vw;\r\n  justify-content: center;\r\n  align-items: center;\r\n  flex-direction: column;\r\n}\r\n\r\n.table-container {\r\n  height: 450px;\r\n  width: 1280px;\r\n}",
+                    "data": "@keyframes animatedBackground {\r\n\t0% { background-position: 0 0; }\r\n  50% { background-position: 100% 0; }\r\n  100% { background-position: 0 0; }\r\n}\r\n\r\n@keyframes animatedBackground2 {\r\n\t0% { background-position: 100% 0; }\r\n  50% { background-position: 0 0; }\r\n  100% { background-position: 100% 0; }\r\n}\r\n\r\n.content {\r\n  display: flex;\r\n  height: 100vh;\r\n  width: 100vw;\r\n  justify-content: center;\r\n  align-items: center;\r\n  flex-direction: column;\r\n\r\n  .inner-content {\r\n    position: absolute;\r\n    top: 0;\r\n    height: 100%;\r\n    width: 100%;\r\n    background-size: cover;\r\n    background-image: url(../assets/background-svg.svg);\r\n    background-repeat: repeat-x;\r\n    animation: animatedBackground 8s linear infinite;\r\n    z-index: -1;\r\n\r\n    .inner-content {\r\n      background-position-x: 100%;\r\n      animation: animatedBackground2 20s linear infinite;\r\n      filter: hue-rotate(-30deg);\r\n      z-index: -2;\r\n    }\r\n\r\n    &.loaded {\r\n      opacity: 0.75;\r\n      transition: opacity 2s ease-out;\r\n      animation-play-state: paused;\r\n      .inner-content {\r\n        opacity: 0.6;\r\n        transition: opacity 2s ease-out;\r\n        animation-play-state: paused;\r\n      }\r\n    }\r\n    &.loading {\r\n      opacity: 0.25;\r\n      transition: opacity 2s ease-in;\r\n      animation-play-state: running;\r\n      .inner-content {\r\n        opacity: 0.25;\r\n        transition: opacity 2s ease-in;\r\n        animation-play-state: running;\r\n      }\r\n    }\r\n  }\r\n}\r\n\r\n.table-container {\r\n  min-width: 1280px;\r\n  padding: 16px;\r\n  position: relative;\r\n  display: flex;\r\n  flex-direction: column;\r\n  justify-content: space-evenly;\r\n  background-color: #fafafa;\r\n  border-radius: 4px;\r\n  box-sizing: border-box;\r\n  overflow: hidden;\r\n  box-shadow:\r\n    0 3px 6px rgba(0,0,0,0.16),\r\n    0 3px 6px rgba(0,0,0,0.23);\r\n}\r\n\r\n.table-component-container {\r\n  z-index: 2;\r\n}\r\n\r\n.fetch-button {\r\n  background-color: #0099ff;\r\n  padding: 8px 16px;\r\n  border: none;\r\n  border-radius: 4px;\r\n  color: white;\r\n  font-family: sans-serif;\r\n  top: 26px;\r\n  box-shadow:\r\n    rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,\r\n    rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,\r\n    rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;\r\n  cursor: pointer;\r\n  opacity: 1;\r\n  transform: scale(1.0);\r\n  transition: transform 0.2s ease-in;\r\n  margin-bottom: 8px;\r\n  &:after {\r\n    border-radius: 4px;\r\n    position: absolute;\r\n    top: 0;\r\n    left: 0;\r\n    width: 100%;\r\n    height: 100%;\r\n    box-shadow:\r\n      rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,\r\n      rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,\r\n      rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;\r\n    opacity: 0;\r\n    transition: opacity 0.2s ease-in;\r\n    content: '';\r\n  }\r\n\r\n  &:focus {\r\n    outline: none;\r\n  }\r\n\r\n  &:active {\r\n    opacity: 0.5;\r\n    transform: scale(0.9);\r\n    transition: all 0.2s ease-out;\r\n  }\r\n  &:before {\r\n    width: 30px;\r\n    height: 30px;\r\n    z-index: 1;\r\n    top: 0;\r\n    left: 25%;\r\n    mix-blend-mode: soft-light;\r\n    opacity: 0.75;\r\n    border-radius: 90px;\r\n    position: absolute;\r\n    background-color: #0099ff;\r\n    transition: all 0.3s ease-in;\r\n    content: '';\r\n  }\r\n  &.loading:before {\r\n    transform: scale(60);\r\n    transition: all 0.3s ease-out;\r\n  }\r\n\r\n  &:hover:after {\r\n    opacity: 1;\r\n    transition: opacity 0.2s ease-out;\r\n  }\r\n}\r\n\r\n@keyframes breathing {\r\n  0% {\r\n    transform: scale(60)\r\n  }\r\n  25% {\r\n    transform: scale(62)\r\n  }\r\n  50% {\r\n    transform: scale(60)\r\n  }\r\n  75% {\r\n    transform: scale(58)\r\n  }\r\n  100% {\r\n    transform: scale(60)\r\n  }\r\n}",
                     "styleUrl": "./app.component.scss"
                 }
             ],
@@ -518,15 +607,26 @@
                         "type": "PeopleService"
                     },
                     {
+                        "name": "queryFilterService",
+                        "type": "QueryFilterService"
+                    },
+                    {
                         "name": "store",
                         "type": "Store<literal type>"
                     }
                 ],
-                "line": 16,
+                "line": 18,
                 "jsdoctags": [
                     {
                         "name": "peopleService",
                         "type": "PeopleService",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    },
+                    {
+                        "name": "queryFilterService",
+                        "type": "QueryFilterService",
                         "tagName": {
                             "text": "param"
                         }
@@ -540,11 +640,11 @@
                     }
                 ]
             },
-            "templateData": "<div class=\"content\" role=\"main\">\n  <div class=\"button-container\">\n    <button (click)=\"fetchData()\">Simulate Data Fetch</button>\n  </div>\n  <div class=\"table-container\">\n    <ui-ng-table\n      [primaryKey]=\"'id'\"\n      [loading]=\"loading\"\n      [maxHeight]=\"350\"\n      [items]=\"(people$ | async)\"\n      [colDefs]=\"colDefs\"\n      ></ui-ng-table>\n  </div>\n</div>\n\n<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->\n<!-- * * * * * * * * * * * The content above * * * * * * * * * * * -->\n<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->\n<!-- * * * * * * * * * * and can be replaced. * * * * * * * * * * * -->\n<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->\n<!-- * * * * * * * * * * End of Placeholder * * * * * * * * * * * -->\n<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->\n\n<router-outlet></router-outlet>"
+            "templateData": "<div class=\"content\" role=\"main\">\n  <div class=\"inner-content\" [class.loading]=\"(loading$ | async)\" [class.loaded]=\"(loading$ | async) === false\">\n    <div class=\"inner-content\"></div>\n  </div>\n  <div class=\"table-container\">\n    <div class=\"button-container\">\n      <button class=\"fetch-button\"\n        [class.loading]=\"(loading$ | async)\"\n        (click)=\"fetchData()\">Simulate Data Fetch</button>\n    </div>\n    <div class=\"table-component-container\">\n      <ui-ng-table\n        [primaryKey]=\"'id'\"\n        [loading]=\"(loading$ | async)\"\n        [maxHeight]=\"350\"\n        [items]=\"(people$ | async)\"\n        [colDefs]=\"colDefs\"\n        [initialFilters]=\"sortFilters\"\n        (filterUpdate)=\"receiveFilters($event)\"\n        ></ui-ng-table>\n    </div>\n</div>\n\n<router-outlet></router-outlet>"
         },
         {
             "name": "ArrowIconComponent",
-            "id": "component-ArrowIconComponent-fca85345d5830b3f05b078bac00b2e2d",
+            "id": "component-ArrowIconComponent-ac57d2e43f112b76c3b9dd62ae87b9ce",
             "file": "projects/ng-table/src/lib/components/searchInput/components/arrowIcon/arrow-icon.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -552,9 +652,7 @@
             "outputs": [],
             "providers": [],
             "selector": "ui-arrow-icon",
-            "styleUrls": [
-                "./arrow-icon.component.scss"
-            ],
+            "styleUrls": [],
             "styles": [],
             "templateUrl": [
                 "./arrow-icon.component.html"
@@ -564,7 +662,7 @@
                 {
                     "name": "direction",
                     "defaultValue": "'asc'",
-                    "line": 10
+                    "line": 9
                 }
             ],
             "outputsClass": [],
@@ -575,163 +673,15 @@
             "description": "",
             "rawdescription": "",
             "type": "component",
-            "sourceCode": "import { Component, Input } from '@angular/core'\r\n\r\n@Component({\r\n  selector: 'ui-arrow-icon',\r\n  templateUrl: './arrow-icon.component.html',\r\n  styleUrls: ['./arrow-icon.component.scss']\r\n})\r\nexport class ArrowIconComponent {\r\n  @Input()\r\n  direction = 'asc'\r\n}\r\n",
+            "sourceCode": "import { Component, Input } from '@angular/core'\r\n\r\n@Component({\r\n  selector: 'ui-arrow-icon',\r\n  templateUrl: './arrow-icon.component.html'\r\n})\r\nexport class ArrowIconComponent {\r\n  @Input()\r\n  direction = 'asc'\r\n}\r\n",
             "assetsDirs": [],
-            "styleUrlsData": [
-                {
-                    "data": ".arrow-icon {\r\n  \r\n}",
-                    "styleUrl": "./arrow-icon.component.scss"
-                }
-            ],
+            "styleUrlsData": "",
             "stylesData": "",
             "templateData": "<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"13\" viewBox=\"0 0 24 24\" width=\"13\">\r\n  <path d=\"M0 0h24v24H0z\" fill=\"none\" />\r\n  <path d=\"M7 10l5 5 5-5z\" />\r\n</svg>"
         },
         {
-            "name": "ButtonComponent",
-            "id": "component-ButtonComponent-642c6c4e474cd5a0ac760dfda26b2fc9",
-            "file": "stories/button.component.ts",
-            "encapsulation": [],
-            "entryComponents": [],
-            "inputs": [],
-            "outputs": [],
-            "providers": [],
-            "selector": "storybook-button",
-            "styleUrls": [
-                "./button.css"
-            ],
-            "styles": [],
-            "template": "<button   type=\"button\"\n   (click)=\"onClick.emit($event)\"\n   [ngClass]=\"classes\"\n   [ngStyle]=\"{ 'background-color': backgroundColor }\"\n >\n   {{ label }}\n </button>",
-            "templateUrl": [],
-            "viewProviders": [],
-            "inputsClass": [
-                {
-                    "name": "backgroundColor",
-                    "description": "<p>What background color to use</p>\n",
-                    "line": 26,
-                    "type": "string"
-                },
-                {
-                    "name": "label",
-                    "defaultValue": "'Button'",
-                    "description": "<p>Button contents</p>\n",
-                    "line": 40
-                },
-                {
-                    "name": "primary",
-                    "defaultValue": "false",
-                    "description": "<p>Is this the principal call to action on the page?</p>\n",
-                    "line": 20
-                },
-                {
-                    "name": "size",
-                    "defaultValue": "'medium'",
-                    "description": "<p>How large should the button be?</p>\n",
-                    "line": 32,
-                    "type": "\"small\" | \"medium\" | \"large\""
-                }
-            ],
-            "outputsClass": [
-                {
-                    "name": "onClick",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "description": "<p>Optional click handler</p>\n",
-                    "line": 46,
-                    "type": "EventEmitter"
-                }
-            ],
-            "propertiesClass": [],
-            "methodsClass": [],
-            "hostBindings": [],
-            "hostListeners": [],
-            "description": "",
-            "rawdescription": "",
-            "type": "component",
-            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core';\n\n@Component({\n  selector: 'storybook-button',\n  template: ` <button\n    type=\"button\"\n    (click)=\"onClick.emit($event)\"\n    [ngClass]=\"classes\"\n    [ngStyle]=\"{ 'background-color': backgroundColor }\"\n  >\n    {{ label }}\n  </button>`,\n  styleUrls: ['./button.css'],\n})\nexport default class ButtonComponent {\n  /**\n   * Is this the principal call to action on the page?\n   */\n  @Input()\n  primary = false;\n\n  /**\n   * What background color to use\n   */\n  @Input()\n  backgroundColor?: string;\n\n  /**\n   * How large should the button be?\n   */\n  @Input()\n  size: 'small' | 'medium' | 'large' = 'medium';\n\n  /**\n   * Button contents\n   *\n   * @required\n   */\n  @Input()\n  label = 'Button';\n\n  /**\n   * Optional click handler\n   */\n  @Output()\n  onClick = new EventEmitter<Event>();\n\n  public get classes(): string[] {\n    const mode = this.primary ? 'storybook-button--primary' : 'storybook-button--secondary';\n\n    return ['storybook-button', `storybook-button--${this.size}`, mode];\n  }\n}\n",
-            "assetsDirs": [],
-            "styleUrlsData": [
-                {
-                    "data": ".storybook-button {\n  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  font-weight: 700;\n  border: 0;\n  border-radius: 3em;\n  cursor: pointer;\n  display: inline-block;\n  line-height: 1;\n}\n.storybook-button--primary {\n  color: white;\n  background-color: #1ea7fd;\n}\n.storybook-button--secondary {\n  color: #333;\n  background-color: transparent;\n  box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px 1px inset;\n}\n.storybook-button--small {\n  font-size: 12px;\n  padding: 10px 16px;\n}\n.storybook-button--medium {\n  font-size: 14px;\n  padding: 11px 20px;\n}\n.storybook-button--large {\n  font-size: 16px;\n  padding: 12px 24px;\n}\n",
-                    "styleUrl": "./button.css"
-                }
-            ],
-            "stylesData": "",
-            "accessors": {
-                "classes": {
-                    "name": "classes",
-                    "getSignature": {
-                        "name": "classes",
-                        "type": "[]",
-                        "returnType": "string[]",
-                        "line": 48
-                    }
-                }
-            }
-        },
-        {
-            "name": "HeaderComponent",
-            "id": "component-HeaderComponent-246e2a69dc126a3bd76c6328dd3b93e2",
-            "file": "stories/header.component.ts",
-            "encapsulation": [],
-            "entryComponents": [],
-            "inputs": [],
-            "outputs": [],
-            "providers": [],
-            "selector": "storybook-header",
-            "styleUrls": [
-                "./header.css"
-            ],
-            "styles": [],
-            "template": "<header>    <div class=\"wrapper\">\n      <div>\n        <svg width=\"32\" height=\"32\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M10 0h12a10 10 0 0110 10v12a10 10 0 01-10 10H10A10 10 0 010 22V10A10 10 0 0110 0z\"\n              fill=\"#FFF\"\n            />\n            <path\n              d=\"M5.3 10.6l10.4 6v11.1l-10.4-6v-11zm11.4-6.2l9.7 5.5-9.7 5.6V4.4z\"\n              fill=\"#555AB9\"\n            />\n            <path\n              d=\"M27.2 10.6v11.2l-10.5 6V16.5l10.5-6zM15.7 4.4v11L6 10l9.7-5.5z\"\n              fill=\"#91BAF8\"\n            />\n          </g>\n        </svg>\n        <h1>Acme</h1>\n      </div>\n      <div>\n        <storybook-button\n          *ngIf=\"user\"\n          size=\"small\"\n          (onClick)=\"onLogout.emit($event)\"\n          label=\"Log out\"\n        ></storybook-button>\n        <storybook-button\n          *ngIf=\"!user\"\n          size=\"small\"\n          (onClick)=\"onLogin.emit($event)\"\n          label=\"Log in\"\n        ></storybook-button>\n        <storybook-button\n          *ngIf=\"!user\"\n          primary\n          size=\"small\"\n          (onClick)=\"onCreateAccount.emit($event)\"\n          label=\"Sign up\"\n        ></storybook-button>\n      </div>\n    </div>\n  </header>",
-            "templateUrl": [],
-            "viewProviders": [],
-            "inputsClass": [
-                {
-                    "name": "user",
-                    "defaultValue": "null",
-                    "line": 53,
-                    "type": "unknown"
-                }
-            ],
-            "outputsClass": [
-                {
-                    "name": "onCreateAccount",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "line": 62,
-                    "type": "EventEmitter"
-                },
-                {
-                    "name": "onLogin",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "line": 56,
-                    "type": "EventEmitter"
-                },
-                {
-                    "name": "onLogout",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "line": 59,
-                    "type": "EventEmitter"
-                }
-            ],
-            "propertiesClass": [],
-            "methodsClass": [],
-            "hostBindings": [],
-            "hostListeners": [],
-            "description": "",
-            "rawdescription": "",
-            "type": "component",
-            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core';\n\n@Component({\n  selector: 'storybook-header',\n  template: `<header>\n    <div class=\"wrapper\">\n      <div>\n        <svg width=\"32\" height=\"32\" viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M10 0h12a10 10 0 0110 10v12a10 10 0 01-10 10H10A10 10 0 010 22V10A10 10 0 0110 0z\"\n              fill=\"#FFF\"\n            />\n            <path\n              d=\"M5.3 10.6l10.4 6v11.1l-10.4-6v-11zm11.4-6.2l9.7 5.5-9.7 5.6V4.4z\"\n              fill=\"#555AB9\"\n            />\n            <path\n              d=\"M27.2 10.6v11.2l-10.5 6V16.5l10.5-6zM15.7 4.4v11L6 10l9.7-5.5z\"\n              fill=\"#91BAF8\"\n            />\n          </g>\n        </svg>\n        <h1>Acme</h1>\n      </div>\n      <div>\n        <storybook-button\n          *ngIf=\"user\"\n          size=\"small\"\n          (onClick)=\"onLogout.emit($event)\"\n          label=\"Log out\"\n        ></storybook-button>\n        <storybook-button\n          *ngIf=\"!user\"\n          size=\"small\"\n          (onClick)=\"onLogin.emit($event)\"\n          label=\"Log in\"\n        ></storybook-button>\n        <storybook-button\n          *ngIf=\"!user\"\n          primary\n          size=\"small\"\n          (onClick)=\"onCreateAccount.emit($event)\"\n          label=\"Sign up\"\n        ></storybook-button>\n      </div>\n    </div>\n  </header>`,\n  styleUrls: ['./header.css'],\n})\nexport default class HeaderComponent {\n  @Input()\n  user: unknown = null;\n\n  @Output()\n  onLogin = new EventEmitter<Event>();\n\n  @Output()\n  onLogout = new EventEmitter<Event>();\n\n  @Output()\n  onCreateAccount = new EventEmitter<Event>();\n}\n",
-            "assetsDirs": [],
-            "styleUrlsData": [
-                {
-                    "data": ".wrapper {\n  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n  padding: 15px 20px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n\nsvg {\n  display: inline-block;\n  vertical-align: top;\n}\n\nh1 {\n  font-weight: 900;\n  font-size: 20px;\n  line-height: 1;\n  margin: 6px 0 6px 10px;\n  display: inline-block;\n  vertical-align: top;\n}\n\nbutton + button {\n  margin-left: 10px;\n}\n",
-                    "styleUrl": "./header.css"
-                }
-            ],
-            "stylesData": ""
-        },
-        {
             "name": "NgTableComponent",
-            "id": "component-NgTableComponent-91e16720770fb3418004773b2f0ffb8b",
+            "id": "component-NgTableComponent-e0c130bf5d3c20807de5aa85227e50c1",
             "file": "projects/ng-table/src/lib/ng-table.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -758,6 +708,12 @@
                     "type": "[]"
                 },
                 {
+                    "name": "initialFilters",
+                    "defaultValue": "[]",
+                    "line": 37,
+                    "type": "SortType[]"
+                },
+                {
                     "name": "items",
                     "line": 17,
                     "type": "[]"
@@ -782,7 +738,7 @@
                 {
                     "name": "filterUpdate",
                     "defaultValue": "new EventEmitter()",
-                    "line": 37,
+                    "line": 40,
                     "type": "EventEmitter<SortType[]>"
                 }
             ],
@@ -793,14 +749,14 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 42
+                    "line": 45
                 },
                 {
                     "name": "colDefSubscription",
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 49
+                    "line": 52
                 },
                 {
                     "name": "colsCopy",
@@ -808,7 +764,15 @@
                     "type": "[]",
                     "optional": false,
                     "description": "",
-                    "line": 46
+                    "line": 49
+                },
+                {
+                    "name": "createHeightObj",
+                    "defaultValue": "() => {...}",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 126
                 },
                 {
                     "name": "drop",
@@ -816,7 +780,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 76
+                    "line": 89
                 },
                 {
                     "name": "filterCol$",
@@ -824,7 +788,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 44
+                    "line": 47
                 },
                 {
                     "name": "filterString$",
@@ -832,7 +796,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 43
+                    "line": 46
                 },
                 {
                     "name": "items$",
@@ -840,7 +804,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 41
+                    "line": 44
                 },
                 {
                     "name": "maxHeightForViewport",
@@ -848,7 +812,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 98
+                    "line": 118
                 },
                 {
                     "name": "ruleDirection",
@@ -856,7 +820,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 82
+                    "line": 97
                 },
                 {
                     "name": "ruleIndex",
@@ -864,7 +828,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 88
+                    "line": 104
                 },
                 {
                     "name": "sortBy",
@@ -872,7 +836,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 72
+                    "line": 84
                 },
                 {
                     "name": "sortRules",
@@ -880,7 +844,7 @@
                     "type": "[]",
                     "optional": false,
                     "description": "",
-                    "line": 47
+                    "line": 50
                 },
                 {
                     "name": "sortRules$",
@@ -888,14 +852,14 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 40
+                    "line": 43
                 },
                 {
                     "name": "sortRulesSubscription",
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 50
+                    "line": 53
                 },
                 {
                     "name": "updateFilterCol",
@@ -903,7 +867,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 94
+                    "line": 112
                 },
                 {
                     "name": "updateFilterString",
@@ -911,7 +875,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 90
+                    "line": 107
                 }
             ],
             "methodsClass": [
@@ -921,7 +885,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 67
+                    "line": 78
                 },
                 {
                     "name": "ngOnInit",
@@ -929,7 +893,7 @@
                     "optional": false,
                     "returnType": "void",
                     "typeParameters": [],
-                    "line": 54
+                    "line": 57
                 }
             ],
             "hostBindings": [],
@@ -937,11 +901,11 @@
             "description": "",
             "rawdescription": "",
             "type": "component",
-            "sourceCode": "import { Component, OnInit, Input, OnDestroy, OnChanges, Output, EventEmitter } from '@angular/core'\nimport { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'\nimport { TableStore } from './ng-table.store'\nimport { ColType, SortType } from './types'\n\nconst ITEM_SIZE = 34\n\n@Component({\n  selector: 'ui-ng-table',\n  templateUrl: './ng-table.component.html',\n  styleUrls: ['./ng-table.component.scss'],\n  providers: [TableStore]\n})\nexport class NgTableComponent implements OnInit, OnDestroy {\n  // direct inputs\n  @Input()\n  set items(value: any[]) {\n    this.tableStore.setItems(value)\n    this.tableStore.setDefaultItems(value)\n  }\n\n  @Input()\n  set colDefs(value: ColType[]) {\n    this.tableStore.setColDefs(value)\n  }\n\n  @Input()\n  primaryKey = 'id'\n\n  @Input()\n  loading = false\n\n  @Input()\n  maxHeight = 350\n\n  @Output()\n  filterUpdate: EventEmitter<SortType[]> = new EventEmitter()\n\n  // stuff from store/state\n  sortRules$ = this.tableStore.sortRules$\n  items$ = this.tableStore.items$\n  colDefs$ = this.tableStore.colDefs$\n  filterString$ = this.tableStore.filterString$\n  filterCol$ = this.tableStore.filterCol$\n\n  colsCopy = []\n  sortRules = []\n\n  colDefSubscription\n  sortRulesSubscription\n\n  constructor(private readonly tableStore: TableStore) { }\n\n  ngOnInit(): void {\n    this.colDefSubscription = this.colDefs$.subscribe(data => this.colsCopy = [...data])\n    this.sortRulesSubscription = this.sortRules$.subscribe(data => {\n      this.filterUpdate.emit(data)\n      return this.sortRules = data\n    })\n\n    this.tableStore.setState(state => ({\n      ...state,\n      primaryKey: this.primaryKey\n    }))\n  }\n\n  ngOnDestroy(): void {\n    this.colDefSubscription.unsubscribe()\n    this.sortRulesSubscription.unsubscribe()\n  }\n\n  sortBy = (colKey) => {\n    this.tableStore.sortBy(colKey)\n  }\n\n  drop = (event: CdkDragDrop<any[]>): void => {\n    const newArrayCopy = [...this.colsCopy]\n    moveItemInArray(newArrayCopy, event.previousIndex, event.currentIndex)\n    this.tableStore.setColDefs(newArrayCopy)\n  }\n\n  ruleDirection = (colKey: string): string => {\n    const foundRule = this.sortRules.find(rule => rule.key === colKey)\n    const direction = foundRule ? foundRule.direction : ''\n    return direction\n  }\n\n  ruleIndex = (colKey: string): number => this.sortRules.findIndex(rule => rule.key === colKey) + 1\n\n  updateFilterString = (event: Event) => {\n    this.tableStore.setFilterString((event.target as HTMLInputElement).value)\n  }\n\n  updateFilterCol = (col: ColType) => {\n    this.tableStore.setFilterCol(col)\n  }\n\n  maxHeightForViewport = (data: any[]): number => {\n    if (data.length * ITEM_SIZE < this.maxHeight) {\n      return data.length * ITEM_SIZE\n    }\n    return this.maxHeight\n  }\n}\n",
+            "sourceCode": "import { Component, OnInit, Input, OnDestroy, OnChanges, Output, EventEmitter } from '@angular/core'\nimport { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'\nimport { TableStore } from './ng-table.store'\nimport { ColType, SortType } from './types'\n\nconst ITEM_SIZE = 34\n\n@Component({\n  selector: 'ui-ng-table',\n  templateUrl: './ng-table.component.html',\n  styleUrls: ['./ng-table.component.scss'],\n  providers: [TableStore]\n})\nexport class NgTableComponent implements OnInit, OnDestroy {\n  // direct inputs\n  @Input()\n  set items(value: any[]) {\n    this.tableStore.setItems(value)\n    this.tableStore.setDefaultItems(value)\n  }\n\n  @Input()\n  set colDefs(value: ColType[]) {\n    this.tableStore.setColDefs(value)\n  }\n\n  @Input()\n  primaryKey = 'id'\n\n  @Input()\n  loading = false\n\n  @Input()\n  maxHeight = 350\n\n  @Input()\n  initialFilters: SortType[] = []\n\n  @Output()\n  filterUpdate: EventEmitter<SortType[]> = new EventEmitter()\n\n  // stuff from store/state\n  sortRules$ = this.tableStore.sortRules$\n  items$ = this.tableStore.items$\n  colDefs$ = this.tableStore.colDefs$\n  filterString$ = this.tableStore.filterString$\n  filterCol$ = this.tableStore.filterCol$\n\n  colsCopy = []\n  sortRules = []\n\n  colDefSubscription\n  sortRulesSubscription\n\n  constructor(private readonly tableStore: TableStore) {}\n\n  ngOnInit(): void {\n    this.colDefSubscription = this.colDefs$.subscribe(data => this.colsCopy = [...data])\n    // make sure initial filters from query params\n    // are applied before emitting state changes\n    if (this.initialFilters.length) {\n      this.tableStore.setSortRules(this.initialFilters)\n      this.sortRules = [...this.initialFilters]\n    }\n\n    this.sortRulesSubscription = this.sortRules$.subscribe(data => {\n      this.filterUpdate.emit(data)\n      return this.sortRules = data\n    })\n\n    this.tableStore.setState(state => ({\n      ...state,\n      primaryKey: this.primaryKey\n    }))\n  }\n\n  // we're gonna wanna unhook those subscriptions\n  ngOnDestroy(): void {\n    this.colDefSubscription.unsubscribe()\n    this.sortRulesSubscription.unsubscribe()\n  }\n\n  // handler for when column is clicked to add a sorting rule\n  sortBy = (colKey) => {\n    this.tableStore.sortBy(colKey)\n  }\n\n  // dropping handler for cdkDragDrop\n  drop = (event: CdkDragDrop<any[]>): void => {\n    // using a copy of columns subscription to simplify moveItemInArray usage\n    const newArrayCopy = [...this.colsCopy]\n    moveItemInArray(newArrayCopy, event.previousIndex, event.currentIndex)\n    this.tableStore.setColDefs(newArrayCopy)\n  }\n\n  // used to find the direction of a col sort rule, to show asc/desc icon\n  ruleDirection = (colKey: string): string => {\n    const foundRule = this.sortRules.find(rule => rule.key === colKey)\n    const direction = foundRule ? foundRule.direction : ''\n    return direction\n  }\n\n  // used to synchronize data between table data and column rules/sorting\n  ruleIndex = (colKey: string): number => this.sortRules.findIndex(rule => rule.key === colKey) + 1\n\n  // used to update the search string, bubbles to state for heavy lifting there\n  updateFilterString = (event: Event) => {\n    this.tableStore.setFilterString((event.target as HTMLInputElement).value)\n  }\n\n  // updates filter rule to use in tandem with filter/search string\n  updateFilterCol = (col: ColType) => {\n    this.tableStore.setFilterCol(col)\n  }\n\n  // this and createHeighObj are used for dynamic styling wizardry\n  // to make sure that A) cdk virtual scroller works and B) we can have nice anims\n  maxHeightForViewport = (data: any[]): number => {\n    if (data.length * ITEM_SIZE < this.maxHeight) {\n      return data.length * ITEM_SIZE\n    }\n    return this.maxHeight\n  }\n\n  // see above\n  createHeightObj = (data: any[]) => {\n    if (this.loading || !data.length) {\n      return {}\n    }\n    return {\n      'max-height.px': this.maxHeightForViewport(data)\n    }\n  }\n}\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": "$offset: 187;\r\n$duration: 1.4s;\r\n\r\n@mixin all-cells {\r\n  padding: 8px 16px;\r\n}\r\n\r\n.cdk-drag-preview {\r\n  flex: 0;\r\n  padding: 0;\r\n  height: 15px;\r\n  border: none;\r\n  border-radius: 16px;\r\n  background-color: white;\r\n  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),\r\n          0 8px 10px 1px rgba(0, 0, 0, 0.14),\r\n          0 3px 14px 2px rgba(0, 0, 0, 0.12);\r\n  cursor: default;\r\n}\r\n\r\n.ng-table {\r\n  font-family: sans-serif;\r\n  border: 1px solid black;\r\n  border-radius: 3px;\r\n  margin-top: 3px;\r\n\r\n  &-header {\r\n    display: flex;\r\n    border-bottom: 1px solid black;\r\n  }\r\n\r\n  &-column_component {\r\n    min-width: 0;\r\n  }\r\n\r\n  &-col_filter-pill {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    height: 16px;\r\n    margin-left: 8px;\r\n    border: 1px solid grey;\r\n    border-radius: 9px;\r\n    width: 32px;\r\n    background-color: #f8f9fa;\r\n    font-size: 12px;\r\n    font-family: sans-serif;\r\n  }\r\n\r\n  &-body {\r\n    display: flex;\r\n    flex-direction: column;\r\n    overflow-y: auto;\r\n  }\r\n\r\n  &-row {\r\n    display: flex;\r\n  }\r\n\r\n  &-cell {\r\n    @include all-cells;\r\n    flex: 1;\r\n    overflow-x: hidden;\r\n    white-space: nowrap;\r\n    text-overflow: ellipsis;\r\n  }\r\n\r\n  &_empty-message {\r\n    height: 180px;\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    font-style: italic;\r\n    font-family: sans-serif;\r\n    font-size: 16px;\r\n  }\r\n\r\n  &_loader {\r\n    animation: rotator $duration ease-in-out infinite;\r\n\r\n    @keyframes rotator {\r\n        0% {\r\n            transform: rotate(0deg);\r\n        }\r\n        100% {\r\n            transform: rotate(270deg);\r\n        }\r\n    }\r\n\r\n    circle {\r\n        stroke-dasharray: $offset;\r\n        stroke-dashoffset: 0;\r\n        transform-origin: center;\r\n        stroke: #1EA7FD;\r\n        animation: dash $duration ease-in-out infinite;\r\n    }\r\n\r\n    @keyframes dash {\r\n        0% {\r\n            stroke-dashoffset: $offset;\r\n        }\r\n        50% {\r\n            stroke-dashoffset: $offset / 4;\r\n            transform: rotate(135deg);\r\n        }\r\n        100% {\r\n            stroke-dashoffset: $offset;\r\n            transform: rotate(450deg);\r\n        }\r\n    }\r\n  }\r\n\r\n  .cdk-drag-placeholder {\r\n    opacity: 25%;\r\n  }\r\n\r\n  .cdk-virtual-scroll-content-wrapper {\r\n    width: 100%;\r\n  }\r\n\r\n  .cdk-virtual-scroll-viewport {\r\n    overflow-x: hidden;\r\n    overflow-y: overlay;\r\n  }\r\n}",
+                    "data": "$offset: 187;\r\n$duration: 1.4s;\r\n\r\n.cdk-drop-list-dragging .cdk-drag {\r\n  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);\r\n}\r\n\r\n.cdk-drag-animating {\r\n  transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);\r\n}\r\n\r\n.cdk-drag-preview {\r\n  font-family: sans-serif;\r\n  margin: 18px;\r\n  flex: 0;\r\n  width: 50px;\r\n  padding: 0;\r\n  border: none;\r\n  border-radius: 4px;\r\n  background-color: white;\r\n  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),\r\n          0 8px 10px 1px rgba(0, 0, 0, 0.14),\r\n          0 3px 14px 2px rgba(0, 0, 0, 0.12);\r\n  cursor: default;\r\n}\r\n\r\n.ng-table {\r\n  background-color: white;\r\n  font-family: sans-serif;\r\n  box-shadow:\r\n    rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,\r\n    rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,\r\n    rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;\r\n  border-radius: 4px;\r\n  margin-top: 8px;\r\n\r\n  &-header {\r\n    display: flex;\r\n    border-bottom: 1px solid rgba(224, 224, 224, 1)\r\n  }\r\n\r\n  &-column_component {\r\n    min-width: 0;\r\n  }\r\n\r\n  &-col_filter-pill {\r\n    display: flex;\r\n    align-items: center;\r\n    justify-content: center;\r\n    height: 16px;\r\n    margin-left: 8px;\r\n    border: 1px solid grey;\r\n    border-radius: 9px;\r\n    width: 32px;\r\n    background-color: #f8f9fa;\r\n    font-size: 12px;\r\n    font-family: sans-serif;\r\n  }\r\n\r\n  &_content {\r\n    overflow: hidden;\r\n    transition: max-height 0.3s ease-out;\r\n\r\n    &.loading, &.empty {\r\n      display: flex;\r\n      align-items: center;\r\n      justify-content: center;\r\n      max-height: 180px;\r\n      transition: max-height 0.3s ease-in;\r\n    }\r\n  }\r\n\r\n  &-body {\r\n    display: flex;\r\n    flex-direction: column;\r\n    overflow-y: auto;\r\n    height: 100%;\r\n  }\r\n\r\n  &-row {\r\n    display: flex;\r\n  }\r\n\r\n  &-cell {\r\n    flex: 1;\r\n    overflow-x: hidden;\r\n\r\n    &_data {\r\n      padding: 8px 16px;\r\n      overflow-x: hidden;\r\n      white-space: nowrap;\r\n      text-overflow: ellipsis;\r\n    }\r\n  }\r\n\r\n  &_empty-message {\r\n    margin: 25%;\r\n    display: flex;\r\n    justify-content: center;\r\n    align-items: center;\r\n    font-style: italic;\r\n    font-family: sans-serif;\r\n    font-size: 16px;\r\n  }\r\n\r\n  &_loader {\r\n    animation: rotator $duration ease-in-out infinite;\r\n\r\n    @keyframes rotator {\r\n      0% {\r\n        transform: rotate(0deg);\r\n      }\r\n      100% {\r\n        transform: rotate(270deg);\r\n      }\r\n    }\r\n\r\n    circle {\r\n      stroke-dasharray: $offset;\r\n      stroke-dashoffset: 0;\r\n      transform-origin: center;\r\n      stroke: #1EA7FD;\r\n      animation: dash $duration ease-in-out infinite;\r\n    }\r\n\r\n    @keyframes dash {\r\n      0% {\r\n        stroke-dashoffset: $offset;\r\n      }\r\n      50% {\r\n        stroke-dashoffset: $offset / 4;\r\n        transform: rotate(135deg);\r\n      }\r\n      100% {\r\n        stroke-dashoffset: $offset;\r\n        transform: rotate(450deg);\r\n      }\r\n    }\r\n  }\r\n\r\n  .cdk-drag-placeholder {\r\n    opacity: 25%;\r\n  }\r\n\r\n  .cdk-virtual-scroll-content-wrapper {\r\n    width: 100% !important;\r\n  }\r\n\r\n  .cdk-virtual-scroll-viewport {\r\n    overflow-x: hidden;\r\n    overflow-y: overlay;\r\n\r\n    &>div {\r\n      width: 100%\r\n    }\r\n  }\r\n}",
                     "styleUrl": "./ng-table.component.scss"
                 }
             ],
@@ -955,7 +919,7 @@
                         "type": "TableStore"
                     }
                 ],
-                "line": 50,
+                "line": 53,
                 "jsdoctags": [
                     {
                         "name": "tableStore",
@@ -1020,73 +984,11 @@
                     }
                 }
             },
-            "templateData": "<ui-search-input\r\n  (valueUpdate)=\"updateFilterString($event)\"\r\n  (colUpdate)=\"updateFilterCol($event)\"\r\n  [filterCol]=\"(filterCol$ | async)\"\r\n  [filterString]=\"(filterString$ | async)\"\r\n  [colDefs]=\"(colDefs$ | async)\"></ui-search-input>\r\n<div class=\"ng-table\">\r\n  <div class=\"ng-table-header\"\r\n    cdkDropList\r\n    [cdkDropListData]=\"colDefs\"\r\n    cdkDropListOrientation=\"horizontal\"\r\n    (cdkDropListDropped)=\"drop($event)\">\r\n\r\n    <ui-table-column\r\n      class=\"ng-table-column_component\"\r\n      *ngFor=\"let col of (colDefs$ | async)\"\r\n      [style.flex]=\"col.flex ? col.flex : 1\"\r\n      [sortBy]=\"sortBy\"\r\n      [col]=\"col\"\r\n      cdkDragLockAxis=\"x\"\r\n      cdkDrag>\r\n\r\n      <div class=\"ng-table-col_filter-pill\" *ngIf=\"ruleDirection(col.key)\">\r\n        {{ruleIndex(col.key)}}\r\n        <ui-sort-icon  [direction]=\"ruleDirection(col.key)\"></ui-sort-icon>\r\n      </div>\r\n\r\n    </ui-table-column>\r\n  </div>\r\n\r\n  <ng-container\r\n    *ngIf=\"(items$ | async).length !== 0 && !loading\">\r\n    <div class=\"ng-table-body\"\r\n      [style.maxHeight.px]=\"maxHeight\">\r\n    <cdk-virtual-scroll-viewport\r\n      [style.height.px]=\"maxHeightForViewport((items$ | async))\"\r\n      itemSize=\"34\">\r\n      <div class=\"ng-table-row\"\r\n        *cdkVirtualFor=\"let item of (items$ | async)\">\r\n        <div class=\"ng-table-cell\"\r\n          [title]=\"item[col.key]\"\r\n          [style.flex]=\"col.flex ? col.flex : 1\"\r\n          *ngFor=\"let col of (colDefs$ | async)\">\r\n          {{item[col.key]}}\r\n        </div>\r\n      </div>\r\n      \r\n    </cdk-virtual-scroll-viewport>\r\n  </div>\r\n  </ng-container>\r\n  \r\n  <div class=\"ng-table_empty-message\"\r\n    *ngIf=\"(items$ | async).length === 0 && !loading\">\r\n    No items found.\r\n  </div>\r\n\r\n  <div class=\"ng-table_empty-message\"\r\n    *ngIf=\"loading\">\r\n    <svg class=\"ng-table_loader\"\r\n      width=\"66\"\r\n      height=\"66\">\r\n      <circle\r\n        fill='none'\r\n        strokeWidth='6'\r\n        strokeLinecap='round'\r\n        cx='33'\r\n        cy='33'\r\n        r='30'\r\n      ></circle>\r\n    </svg>\r\n  </div>\r\n</div>"
-        },
-        {
-            "name": "PageComponent",
-            "id": "component-PageComponent-cca1a8911321fa17756ce90c90de65cc",
-            "file": "stories/page.component.ts",
-            "encapsulation": [],
-            "entryComponents": [],
-            "inputs": [],
-            "outputs": [],
-            "providers": [],
-            "selector": "storybook-page",
-            "styleUrls": [
-                "./page.css"
-            ],
-            "styles": [],
-            "template": "<article>    <storybook-header\n      [user]=\"user\"\n      (onLogout)=\"onLogout.emit($event)\"\n      (onLogin)=\"onLogin.emit($event)\"\n      (onCreateAccount)=\"onCreateAccount.emit($event)\"\n    ></storybook-header>\n    <section>\n      <h2>Pages in Storybook</h2>\n      <p>\n        We recommend building UIs with a\n        <a href=\"https://componentdriven.org\" target=\"_blank\" rel=\"noopener noreferrer\">\n          <strong>component-driven</strong>\n        </a>\n        process starting with atomic components and ending with pages.\n      </p>\n      <p>\n        Render pages with mock data. This makes it easy to build and review page states without\n        needing to navigate to them in your app. Here are some handy patterns for managing page data\n        in Storybook:\n      </p>\n      <ul>\n        <li>\n          Use a higher-level connected component. Storybook helps you compose such data from the\n          \"args\" of child component stories\n        </li>\n        <li>\n          Assemble data in the page component from your services. You can mock these services out\n          using Storybook.\n        </li>\n      </ul>\n      <p>\n        Get a guided tutorial on component-driven development at\n        <a href=\"https://www.learnstorybook.com\" target=\"_blank\" rel=\"noopener noreferrer\">\n          Learn Storybook\n        </a>\n        . Read more in the\n        <a href=\"https://storybook.js.org/docs\" target=\"_blank\" rel=\"noopener noreferrer\">\n          docs\n        </a>\n        .\n      </p>\n      <div class=\"tip-wrapper\">\n        <span class=\"tip\">Tip</span> Adjust the width of the canvas with the\n        <svg width=\"10\" height=\"10\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M1.5 5.2h4.8c.3 0 .5.2.5.4v5.1c-.1.2-.3.3-.4.3H1.4a.5.5 0 01-.5-.4V5.7c0-.3.2-.5.5-.5zm0-2.1h6.9c.3 0 .5.2.5.4v7a.5.5 0 01-1 0V4H1.5a.5.5 0 010-1zm0-2.1h9c.3 0 .5.2.5.4v9.1a.5.5 0 01-1 0V2H1.5a.5.5 0 010-1zm4.3 5.2H2V10h3.8V6.2z\"\n              id=\"a\"\n              fill=\"#999\"\n            />\n          </g>\n        </svg>\n        Viewports addon in the toolbar\n      </div>\n    </section>\n  </article>",
-            "templateUrl": [],
-            "viewProviders": [],
-            "inputsClass": [
-                {
-                    "name": "user",
-                    "defaultValue": "null",
-                    "line": 66,
-                    "type": "unknown"
-                }
-            ],
-            "outputsClass": [
-                {
-                    "name": "onCreateAccount",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "line": 75,
-                    "type": "EventEmitter"
-                },
-                {
-                    "name": "onLogin",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "line": 69,
-                    "type": "EventEmitter"
-                },
-                {
-                    "name": "onLogout",
-                    "defaultValue": "new EventEmitter<Event>()",
-                    "line": 72,
-                    "type": "EventEmitter"
-                }
-            ],
-            "propertiesClass": [],
-            "methodsClass": [],
-            "hostBindings": [],
-            "hostListeners": [],
-            "description": "",
-            "rawdescription": "",
-            "type": "component",
-            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core';\n\n@Component({\n  selector: 'storybook-page',\n  template: `<article>\n    <storybook-header\n      [user]=\"user\"\n      (onLogout)=\"onLogout.emit($event)\"\n      (onLogin)=\"onLogin.emit($event)\"\n      (onCreateAccount)=\"onCreateAccount.emit($event)\"\n    ></storybook-header>\n    <section>\n      <h2>Pages in Storybook</h2>\n      <p>\n        We recommend building UIs with a\n        <a href=\"https://componentdriven.org\" target=\"_blank\" rel=\"noopener noreferrer\">\n          <strong>component-driven</strong>\n        </a>\n        process starting with atomic components and ending with pages.\n      </p>\n      <p>\n        Render pages with mock data. This makes it easy to build and review page states without\n        needing to navigate to them in your app. Here are some handy patterns for managing page data\n        in Storybook:\n      </p>\n      <ul>\n        <li>\n          Use a higher-level connected component. Storybook helps you compose such data from the\n          \"args\" of child component stories\n        </li>\n        <li>\n          Assemble data in the page component from your services. You can mock these services out\n          using Storybook.\n        </li>\n      </ul>\n      <p>\n        Get a guided tutorial on component-driven development at\n        <a href=\"https://www.learnstorybook.com\" target=\"_blank\" rel=\"noopener noreferrer\">\n          Learn Storybook\n        </a>\n        . Read more in the\n        <a href=\"https://storybook.js.org/docs\" target=\"_blank\" rel=\"noopener noreferrer\">\n          docs\n        </a>\n        .\n      </p>\n      <div class=\"tip-wrapper\">\n        <span class=\"tip\">Tip</span> Adjust the width of the canvas with the\n        <svg width=\"10\" height=\"10\" viewBox=\"0 0 12 12\" xmlns=\"http://www.w3.org/2000/svg\">\n          <g fill=\"none\" fillRule=\"evenodd\">\n            <path\n              d=\"M1.5 5.2h4.8c.3 0 .5.2.5.4v5.1c-.1.2-.3.3-.4.3H1.4a.5.5 0 01-.5-.4V5.7c0-.3.2-.5.5-.5zm0-2.1h6.9c.3 0 .5.2.5.4v7a.5.5 0 01-1 0V4H1.5a.5.5 0 010-1zm0-2.1h9c.3 0 .5.2.5.4v9.1a.5.5 0 01-1 0V2H1.5a.5.5 0 010-1zm4.3 5.2H2V10h3.8V6.2z\"\n              id=\"a\"\n              fill=\"#999\"\n            />\n          </g>\n        </svg>\n        Viewports addon in the toolbar\n      </div>\n    </section>\n  </article>`,\n  styleUrls: ['./page.css'],\n})\nexport default class PageComponent {\n  @Input()\n  user: unknown = null;\n\n  @Output()\n  onLogin = new EventEmitter<Event>();\n\n  @Output()\n  onLogout = new EventEmitter<Event>();\n\n  @Output()\n  onCreateAccount = new EventEmitter<Event>();\n}\n\n// export const Page = ({ user, onLogin, onLogout, onCreateAccount }) => (\n//   <article>\n//     <Header user={user} onLogin={onLogin} onLogout={onLogout} onCreateAccount={onCreateAccount} />\n\n// );\n// Page.propTypes = {\n//   user: PropTypes.shape({}),\n//   onLogin: PropTypes.func.isRequired,\n//   onLogout: PropTypes.func.isRequired,\n//   onCreateAccount: PropTypes.func.isRequired,\n// };\n\n// Page.defaultProps = {\n//   user: null,\n// };\n",
-            "assetsDirs": [],
-            "styleUrlsData": [
-                {
-                    "data": "section {\n  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n  font-size: 14px;\n  line-height: 24px;\n  padding: 48px 20px;\n  margin: 0 auto;\n  max-width: 600px;\n  color: #333;\n}\n\nh2 {\n  font-weight: 900;\n  font-size: 32px;\n  line-height: 1;\n  margin: 0 0 4px;\n  display: inline-block;\n  vertical-align: top;\n}\n\np {\n  margin: 1em 0;\n}\n\na {\n  text-decoration: none;\n  color: #1ea7fd;\n}\n\nul {\n  padding-left: 30px;\n  margin: 1em 0;\n}\n\nli {\n  margin-bottom: 8px;\n}\n\n.tip {\n  display: inline-block;\n  border-radius: 1em;\n  font-size: 11px;\n  line-height: 12px;\n  font-weight: 700;\n  background: #e7fdd8;\n  color: #66bf3c;\n  padding: 4px 12px;\n  margin-right: 10px;\n  vertical-align: top;\n}\n\n.tip-wrapper {\n  font-size: 13px;\n  line-height: 20px;\n  margin-top: 40px;\n  margin-bottom: 40px;\n}\n\n.tip-wrapper svg {\n  display: inline-block;\n  height: 12px;\n  width: 12px;\n  margin-right: 4px;\n  vertical-align: top;\n  margin-top: 3px;\n}\n\n.tip-wrapper svg path {\n  fill: #1ea7fd;\n}\n",
-                    "styleUrl": "./page.css"
-                }
-            ],
-            "stylesData": ""
+            "templateData": "<ui-search-input\r\n  (valueUpdate)=\"updateFilterString($event)\"\r\n  (colUpdate)=\"updateFilterCol($event)\"\r\n  [filterCol]=\"(filterCol$ | async)\"\r\n  [filterString]=\"(filterString$ | async)\"\r\n  [colDefs]=\"(colDefs$ | async)\"></ui-search-input>\r\n<div class=\"ng-table\">\r\n  <div class=\"ng-table-header\"\r\n    cdkDropList\r\n    [cdkDropListData]=\"colDefs\"\r\n    cdkDropListOrientation=\"horizontal\"\r\n    (cdkDropListDropped)=\"drop($event)\">\r\n\r\n    <ui-table-column\r\n      class=\"ng-table-column_component\"\r\n      *ngFor=\"let col of (colDefs$ | async)\"\r\n      [style.flex]=\"col.flex ? col.flex : 1\"\r\n      [sortBy]=\"sortBy\"\r\n      [col]=\"col\"\r\n      cdkDrag>\r\n\r\n      <div class=\"ng-table-col_filter-pill\" *ngIf=\"ruleDirection(col.key)\">\r\n        {{ruleIndex(col.key)}}\r\n        <ui-sort-icon  [direction]=\"ruleDirection(col.key)\"></ui-sort-icon>\r\n      </div>\r\n\r\n    </ui-table-column>\r\n  </div>\r\n\r\n  <div class=\"ng-table_content\"\r\n    [ngStyle]=\"createHeightObj((items$ | async))\"\r\n    [class.loading]=\"loading\"\r\n    [class.empty]=\"!(items$ | async).length\">\r\n    <ng-container\r\n      *ngIf=\"(items$ | async).length !== 0 && !loading\">\r\n      <div class=\"ng-table-body\"\r\n        [style.maxHeight.px]=\"maxHeight\">\r\n        <cdk-virtual-scroll-viewport\r\n          class=\"waddup\"\r\n          [style.height.px]=\"maxHeightForViewport((items$ | async))\"\r\n          itemSize=\"34\">\r\n          <div class=\"ng-table-row\"\r\n            *cdkVirtualFor=\"let item of (items$ | async)\">\r\n            <div class=\"ng-table-cell\"\r\n              [title]=\"item[col.key]\"\r\n              [style.flex]=\"col.flex ? col.flex : 1\"\r\n              *ngFor=\"let col of (colDefs$ | async)\">\r\n              <div class=\"ng-table-cell_data\">{{item[col.key]}}</div>\r\n            </div>\r\n          </div>\r\n        </cdk-virtual-scroll-viewport>\r\n      </div>\r\n    </ng-container>\r\n    \r\n    <div class=\"ng-table_empty-message\"\r\n      *ngIf=\"(items$ | async).length === 0 && !loading\">\r\n      No items found.\r\n    </div>\r\n\r\n    <div class=\"ng-table_empty-message\"\r\n      *ngIf=\"loading\">\r\n      <svg class=\"ng-table_loader\"\r\n        width=\"66\"\r\n        height=\"66\">\r\n        <circle\r\n          fill='none'\r\n          strokeWidth='6'\r\n          strokeLinecap='round'\r\n          cx='33'\r\n          cy='33'\r\n          r='30'\r\n        ></circle>\r\n      </svg>\r\n    </div>\r\n  </div>\r\n</div>"
         },
         {
             "name": "SearchInputComponent",
-            "id": "component-SearchInputComponent-30bdb41b025522a2a4ecbc88c3b394c7",
+            "id": "component-SearchInputComponent-d06a37b8279e614cd61fcb0ee7837649",
             "file": "projects/ng-table/src/lib/components/searchInput/search-input.component.ts",
             "encapsulation": [],
             "entryComponents": [],
@@ -1123,13 +1025,13 @@
                 {
                     "name": "colUpdate",
                     "defaultValue": "new EventEmitter()",
-                    "line": 23,
+                    "line": 25,
                     "type": "EventEmitter<ColType>"
                 },
                 {
                     "name": "valueUpdate",
                     "defaultValue": "new EventEmitter()",
-                    "line": 20,
+                    "line": 21,
                     "type": "EventEmitter<Event>"
                 }
             ],
@@ -1140,7 +1042,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 25
+                    "line": 27
                 },
                 {
                     "name": "updateFilterCol",
@@ -1148,7 +1050,7 @@
                     "type": "",
                     "optional": false,
                     "description": "",
-                    "line": 29
+                    "line": 31
                 }
             ],
             "methodsClass": [],
@@ -1157,11 +1059,11 @@
             "description": "",
             "rawdescription": "",
             "type": "component",
-            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core'\r\nimport { ColType } from '../../types'\r\n\r\n@Component({\r\n  selector: 'ui-search-input',\r\n  templateUrl: './search-input.component.html',\r\n  styleUrls: ['./search-input.component.scss']\r\n})\r\nexport class SearchInputComponent {\r\n  @Input()\r\n  colDefs: ColType[]\r\n\r\n  @Input()\r\n  filterString: string\r\n\r\n  @Input()\r\n  filterCol: ColType | {}\r\n\r\n  @Output()\r\n  valueUpdate: EventEmitter<Event> = new EventEmitter()\r\n\r\n  @Output()\r\n  colUpdate: EventEmitter<ColType> = new EventEmitter()\r\n\r\n  searchFilterChanged = (event) => {\r\n    this.valueUpdate.emit(event)\r\n  }\r\n\r\n  updateFilterCol = (col: ColType) => {\r\n    this.colUpdate.emit(col)\r\n  }\r\n}\r\n",
+            "sourceCode": "import { Component, Input, Output, EventEmitter } from '@angular/core'\r\nimport { ColType } from '../../types'\r\n\r\n@Component({\r\n  selector: 'ui-search-input',\r\n  templateUrl: './search-input.component.html',\r\n  styleUrls: ['./search-input.component.scss']\r\n})\r\nexport class SearchInputComponent {\r\n  @Input()\r\n  colDefs: ColType[]\r\n\r\n  @Input()\r\n  filterString: string\r\n\r\n  @Input()\r\n  filterCol: ColType | {}\r\n\r\n  // used to emit searchstring\r\n  @Output()\r\n  valueUpdate: EventEmitter<Event> = new EventEmitter()\r\n\r\n  // used to emit new col to search/filter by\r\n  @Output()\r\n  colUpdate: EventEmitter<ColType> = new EventEmitter()\r\n\r\n  searchFilterChanged = (event) => {\r\n    this.valueUpdate.emit(event)\r\n  }\r\n\r\n  updateFilterCol = (col: ColType) => {\r\n    this.colUpdate.emit(col)\r\n  }\r\n}\r\n",
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": ".ng-table-search {\r\n  &_container {\r\n    display: flex;\r\n    border: 1px solid black;\r\n    border-radius: 3px;\r\n    width: fit-content;\r\n    align-items: center;\r\n  }\r\n\r\n  &_dropdown {\r\n    &-menu {\r\n      background-color: white;\r\n      padding: 8px 0;\r\n      border: 1px solid black;\r\n      border-radius: 3px;\r\n      display: flex;\r\n      flex-direction: column;\r\n      max-height: 120px;\r\n      overflow-y: auto;\r\n      width: 120px;\r\n      cursor: default;\r\n\r\n      &-item {\r\n        padding: 8px;\r\n        overflow-x: hidden;\r\n        white-space: nowrap;\r\n        text-overflow: ellipsis;\r\n        cursor: pointer;\r\n\r\n        &:hover {\r\n          background-color: #f8f9fa;\r\n        }\r\n      }\r\n    }\r\n\r\n    &-button {\r\n      padding: 8px;\r\n      border-right: 1px solid black;\r\n      display: flex;\r\n      align-items: center;\r\n      font-family: sans-serif;\r\n      font-size: 14px;\r\n      position: relative;\r\n      cursor: pointer;\r\n\r\n      ui-arrow-icon {\r\n        display: flex;\r\n      }\r\n\r\n      .ng-dropdown-menu {\r\n        position: absolute;\r\n        top: 32px;\r\n        left: -3px;\r\n        display: block;\r\n        \r\n        &.showing {\r\n          opacity: 1;\r\n          max-height: 120px;\r\n          box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);\r\n          transition: max-height 0.2s, opacity 0s ease-in;\r\n          z-index: 12;\r\n        }\r\n\r\n        &.hiding {\r\n          opacity: 0;\r\n          max-height: 0;\r\n          transition: max-height 0.2s ease-out;\r\n        }\r\n      }\r\n    }\r\n  }\r\n\r\n  &_input {\r\n    padding: 8px;\r\n    border: none;\r\n    &:focus {\r\n      outline: none;\r\n    }\r\n  }\r\n}",
+                    "data": ".ng-table-search {\r\n  &_container {\r\n    display: flex;\r\n    box-shadow:\r\n      rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,\r\n      rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,\r\n      rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;\r\n    border-radius: 3px;\r\n    width: fit-content;\r\n    align-items: center;\r\n    background-color: white;\r\n  }\r\n\r\n  &_dropdown {\r\n    &-menu {\r\n      background-color: white;\r\n      padding: 8px 0;\r\n      box-shadow:\r\n        rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,\r\n        rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,\r\n        rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;\r\n      border-radius: 3px;\r\n      display: flex;\r\n      flex-direction: column;\r\n      max-height: 120px;\r\n      overflow-y: auto;\r\n      width: 120px;\r\n      cursor: default;\r\n\r\n      &-item {\r\n        padding: 8px;\r\n        overflow-x: hidden;\r\n        white-space: nowrap;\r\n        text-overflow: ellipsis;\r\n        cursor: pointer;\r\n\r\n        &:hover {\r\n          background-color: #f8f9fa;\r\n        }\r\n      }\r\n    }\r\n\r\n    &-button {\r\n      padding: 8px;\r\n      border-right: 1px solid rgba(224, 224, 224, 1);\r\n      display: flex;\r\n      align-items: center;\r\n      font-family: sans-serif;\r\n      font-size: 14px;\r\n      position: relative;\r\n      cursor: pointer;\r\n\r\n      ui-arrow-icon {\r\n        display: flex;\r\n      }\r\n\r\n      .ng-dropdown-menu {\r\n        position: absolute;\r\n        top: 100%;\r\n        margin-top: 4px;\r\n        left: -3px;\r\n        display: block;\r\n        \r\n        &.showing {\r\n          opacity: 1;\r\n          max-height: 120px;\r\n          box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);\r\n          transition: max-height 0.2s, opacity 0s ease-in;\r\n          z-index: 12;\r\n        }\r\n\r\n        &.hiding {\r\n          opacity: 0;\r\n          max-height: 0;\r\n          transition: max-height 0.2s ease-out;\r\n        }\r\n      }\r\n    }\r\n  }\r\n\r\n  &_input {\r\n    padding: 8px;\r\n    border: none;\r\n    &:focus {\r\n      outline: none;\r\n    }\r\n  }\r\n}",
                     "styleUrl": "./search-input.component.scss"
                 }
             ],
@@ -1276,7 +1178,7 @@
             "assetsDirs": [],
             "styleUrlsData": [
                 {
-                    "data": ".cdk-drag-preview {\r\n  opacity: 0;\r\n}\r\n\r\n.ng-table-col {\r\n  padding: 16px;\r\n  display: flex;\r\n  height: 20px;\r\n  align-items: center;\r\n  justify-content: space-between;\r\n  flex: 0;\r\n  cursor: pointer;\r\n  overflow-x: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n\r\n  &:not(:first-child) {\r\n    border-left: 1px solid black;\r\n  }\r\n\r\n  &_label {\r\n    text-overflow: ellipsis;\r\n    overflow-x: hidden;\r\n    white-space: nowrap;\r\n  }\r\n\r\n  &_dragger {\r\n    width: 1px;\r\n    height: 100%;\r\n    background-color: black;\r\n    cursor: col-resize;\r\n    margin-left: 24px;\r\n  }\r\n\r\n  &_actions-container {\r\n    height: 100%;\r\n    display: flex;\r\n    justify-content: flex-end;\r\n  }\r\n}",
+                    "data": ".cdk-drag-preview {\r\n  opacity: 0;\r\n}\r\n\r\n.ng-table-col {\r\n  padding: 16px;\r\n  display: flex;\r\n  height: 20px;\r\n  align-items: center;\r\n  justify-content: space-between;\r\n  flex: 0;\r\n  cursor: pointer;\r\n  overflow-x: hidden;\r\n  text-overflow: ellipsis;\r\n  white-space: nowrap;\r\n\r\n  &:not(:first-child) {\r\n    border-left: 1px solid black;\r\n  }\r\n\r\n  &_label {\r\n    text-overflow: ellipsis;\r\n    overflow-x: hidden;\r\n    white-space: nowrap;\r\n  }\r\n\r\n  &_dragger {\r\n    width: 1px;\r\n    height: 100%;\r\n    border-right: 1px solid rgba(224, 224, 224, 1);\r\n    cursor: col-resize;\r\n    margin-left: 24px;\r\n  }\r\n\r\n  &_actions-container {\r\n    height: 100%;\r\n    display: flex;\r\n    justify-content: flex-end;\r\n  }\r\n}",
                     "styleUrl": "./table-column.component.scss"
                 }
             ],
@@ -1304,6 +1206,9 @@
                     "elements": [
                         {
                             "name": "PeopleService"
+                        },
+                        {
+                            "name": "QueryFilterService"
                         }
                     ]
                 },
@@ -1470,14 +1375,6 @@
     "miscellaneous": {
         "variables": [
             {
-                "name": "_reducer",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "projects/exampleApp/src/state/state.reducer.ts",
-                "type": "",
-                "defaultValue": "createReducer(\r\n  initialState,\r\n  on(setData, (state, { data }) => {\r\n    console.log(data)\r\n    return [...data]\r\n  })\r\n)"
-            },
-            {
                 "name": "colDefs",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -1539,15 +1436,23 @@
                 "subtype": "variable",
                 "file": "projects/exampleApp/src/api/index.ts",
                 "type": "",
-                "defaultValue": "(): Promise<FakeApiType> => {\r\n  const fakeData = []\r\n  for (let i = 0; i < 250; i++) {\r\n    fakeData.push(generateFakeUser())\r\n  }\r\n  const response = new Promise<FakeApiType>((resolve, reject) => {\r\n    setTimeout(() => {\r\n      resolve({ data: fakeData })\r\n    }, 1500)\r\n  })\r\n  console.log(response)\r\n  return response\r\n}"
+                "defaultValue": "(): Promise<FakeApiType> => {\r\n  const fakeData = []\r\n  for (let i = 0; i < 250; i++) {\r\n    fakeData.push(generateFakeUser())\r\n  }\r\n  const response = new Promise<FakeApiType>((resolve, reject) => {\r\n    setTimeout(() => {\r\n      resolve({ data: fakeData })\r\n    }, 1500)\r\n  })\r\n  return response\r\n}"
+            },
+            {
+                "name": "initialPeopleState",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/exampleApp/src/state/people.reducer.ts",
+                "type": "[]",
+                "defaultValue": "[]"
             },
             {
                 "name": "initialState",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/exampleApp/src/state/state.reducer.ts",
-                "type": "[]",
-                "defaultValue": "[]"
+                "file": "projects/exampleApp/src/state/loading.reducer.ts",
+                "type": "",
+                "defaultValue": "false"
             },
             {
                 "name": "ITEM_SIZE",
@@ -1566,46 +1471,6 @@
                 "defaultValue": "[{\r\n  id: 1,\r\n  name: 'Bob Bobson',\r\n  title: 'Asst Regional Mgr',\r\n  age: 35,\r\n  hair: 'black'\r\n}, {\r\n  id: 2,\r\n  name: 'Paul Paulson',\r\n  title: 'Office Mgr',\r\n  age: 30,\r\n  hair: 'brown'\r\n}, {\r\n  id: 3,\r\n  name: 'Ann Annington',\r\n  title: 'Sr Engineer',\r\n  age: 27,\r\n  hair: 'purple'\r\n}, {\r\n  id: 4,\r\n  name: 'Ann Annington',\r\n  title: 'Sr Engineer',\r\n  age: 23,\r\n  hair: 'purple'\r\n}, {\r\n  id: 5,\r\n  name: 'Ann Annington',\r\n  title: 'Engineer',\r\n  age: 23,\r\n  hair: 'purple'\r\n}, {\r\n  id: 6,\r\n  name: 'Richard Richardson',\r\n  title: 'Sr Engineer',\r\n  age: 28,\r\n  hair: 'blonde'\r\n}, {\r\n  id: 7,\r\n  name: 'Juliet Juliets',\r\n  title: 'Dog Enthusiast',\r\n  age: 22,\r\n  hair: 'orange'\r\n}]"
             },
             {
-                "name": "Large",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "stories/Button.stories.ts",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
-                "name": "LoggedIn",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "stories/Page.stories.ts",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
-                "name": "LoggedIn",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "stories/Header.stories.ts",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
-                "name": "LoggedOut",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "stories/Header.stories.ts",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
-                "name": "LoggedOut",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "stories/Page.stories.ts",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
                 "name": "Overall",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
@@ -1614,12 +1479,20 @@
                 "defaultValue": "Template.bind({})"
             },
             {
-                "name": "Primary",
+                "name": "reducer",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "stories/Button.stories.ts",
+                "file": "projects/exampleApp/src/state/loading.reducer.ts",
                 "type": "",
-                "defaultValue": "Template.bind({})"
+                "defaultValue": "createReducer(\r\n  initialState,\r\n  on(setLoading, (state, { loading }) => loading)\r\n)"
+            },
+            {
+                "name": "reducer",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "projects/exampleApp/src/state/people.reducer.ts",
+                "type": "",
+                "defaultValue": "createReducer(\r\n  initialPeopleState,\r\n  on(setData, (state, { data }) => [...data])\r\n)"
             },
             {
                 "name": "require",
@@ -1636,52 +1509,20 @@
                 "type": "literal type"
             },
             {
-                "name": "Secondary",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "stories/Button.stories.ts",
-                "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
                 "name": "setData",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "projects/exampleApp/src/state/state.actions.ts",
+                "file": "projects/exampleApp/src/state/people.actions.ts",
                 "type": "",
                 "defaultValue": "createAction('[Global State] set', props<{data: PersonType[]}>())"
             },
             {
-                "name": "Small",
+                "name": "setLoading",
                 "ctype": "miscellaneous",
                 "subtype": "variable",
-                "file": "stories/Button.stories.ts",
+                "file": "projects/exampleApp/src/state/loading.actions.ts",
                 "type": "",
-                "defaultValue": "Template.bind({})"
-            },
-            {
-                "name": "Template",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "stories/Button.stories.ts",
-                "type": "Story<Button>",
-                "defaultValue": "(args: Button) => ({\n  component: Button,\n  props: args,\n})"
-            },
-            {
-                "name": "Template",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "stories/Page.stories.ts",
-                "type": "Story<Page>",
-                "defaultValue": "(args: Page) => ({\n  component: Page,\n  props: args,\n})"
-            },
-            {
-                "name": "Template",
-                "ctype": "miscellaneous",
-                "subtype": "variable",
-                "file": "stories/Header.stories.ts",
-                "type": "Story<Header>",
-                "defaultValue": "(args: Header) => ({\n  component: Header,\n  props: args,\n})"
+                "defaultValue": "createAction('[Loading State] set', props<{loading: boolean}>())"
             },
             {
                 "name": "Template",
@@ -1694,8 +1535,8 @@
         ],
         "functions": [
             {
-                "name": "stateReducer",
-                "file": "projects/exampleApp/src/state/state.reducer.ts",
+                "name": "loadingReducer",
+                "file": "projects/exampleApp/src/state/loading.reducer.ts",
                 "ctype": "miscellaneous",
                 "subtype": "function",
                 "description": "",
@@ -1709,6 +1550,61 @@
                         "type": ""
                     }
                 ],
+                "returnType": "boolean",
+                "jsdoctags": [
+                    {
+                        "name": "state",
+                        "type": "",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "type": "",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "queryServiceFactory",
+                "file": "projects/exampleApp/src/factories/queryService.factory.ts",
+                "ctype": "miscellaneous",
+                "subtype": "function",
+                "description": "",
+                "args": [
+                    {
+                        "name": "queryFilterService"
+                    }
+                ],
+                "jsdoctags": [
+                    {
+                        "name": "queryFilterService",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "stateReducer",
+                "file": "projects/exampleApp/src/state/people.reducer.ts",
+                "ctype": "miscellaneous",
+                "subtype": "function",
+                "description": "",
+                "args": [
+                    {
+                        "name": "state",
+                        "type": ""
+                    },
+                    {
+                        "name": "action",
+                        "type": ""
+                    }
+                ],
+                "returnType": "any[]",
                 "jsdoctags": [
                     {
                         "name": "state",
@@ -1767,24 +1663,6 @@
         ],
         "enumerations": [],
         "groupedVariables": {
-            "projects/exampleApp/src/state/state.reducer.ts": [
-                {
-                    "name": "_reducer",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/exampleApp/src/state/state.reducer.ts",
-                    "type": "",
-                    "defaultValue": "createReducer(\r\n  initialState,\r\n  on(setData, (state, { data }) => {\r\n    console.log(data)\r\n    return [...data]\r\n  })\r\n)"
-                },
-                {
-                    "name": "initialState",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "projects/exampleApp/src/state/state.reducer.ts",
-                    "type": "[]",
-                    "defaultValue": "[]"
-                }
-            ],
             "stories/ngTable.stories.ts": [
                 {
                     "name": "colDefs",
@@ -1898,7 +1776,43 @@
                     "subtype": "variable",
                     "file": "projects/exampleApp/src/api/index.ts",
                     "type": "",
-                    "defaultValue": "(): Promise<FakeApiType> => {\r\n  const fakeData = []\r\n  for (let i = 0; i < 250; i++) {\r\n    fakeData.push(generateFakeUser())\r\n  }\r\n  const response = new Promise<FakeApiType>((resolve, reject) => {\r\n    setTimeout(() => {\r\n      resolve({ data: fakeData })\r\n    }, 1500)\r\n  })\r\n  console.log(response)\r\n  return response\r\n}"
+                    "defaultValue": "(): Promise<FakeApiType> => {\r\n  const fakeData = []\r\n  for (let i = 0; i < 250; i++) {\r\n    fakeData.push(generateFakeUser())\r\n  }\r\n  const response = new Promise<FakeApiType>((resolve, reject) => {\r\n    setTimeout(() => {\r\n      resolve({ data: fakeData })\r\n    }, 1500)\r\n  })\r\n  return response\r\n}"
+                }
+            ],
+            "projects/exampleApp/src/state/people.reducer.ts": [
+                {
+                    "name": "initialPeopleState",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/exampleApp/src/state/people.reducer.ts",
+                    "type": "[]",
+                    "defaultValue": "[]"
+                },
+                {
+                    "name": "reducer",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/exampleApp/src/state/people.reducer.ts",
+                    "type": "",
+                    "defaultValue": "createReducer(\r\n  initialPeopleState,\r\n  on(setData, (state, { data }) => [...data])\r\n)"
+                }
+            ],
+            "projects/exampleApp/src/state/loading.reducer.ts": [
+                {
+                    "name": "initialState",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/exampleApp/src/state/loading.reducer.ts",
+                    "type": "",
+                    "defaultValue": "false"
+                },
+                {
+                    "name": "reducer",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/exampleApp/src/state/loading.reducer.ts",
+                    "type": "",
+                    "defaultValue": "createReducer(\r\n  initialState,\r\n  on(setLoading, (state, { loading }) => loading)\r\n)"
                 }
             ],
             "projects/ng-table/src/lib/ng-table.component.ts": [
@@ -1911,116 +1825,32 @@
                     "defaultValue": "34"
                 }
             ],
-            "stories/Button.stories.ts": [
-                {
-                    "name": "Large",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Button.stories.ts",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Primary",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Button.stories.ts",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Secondary",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Button.stories.ts",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Small",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Button.stories.ts",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Template",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Button.stories.ts",
-                    "type": "Story<Button>",
-                    "defaultValue": "(args: Button) => ({\n  component: Button,\n  props: args,\n})"
-                }
-            ],
-            "stories/Page.stories.ts": [
-                {
-                    "name": "LoggedIn",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Page.stories.ts",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "LoggedOut",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Page.stories.ts",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Template",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Page.stories.ts",
-                    "type": "Story<Page>",
-                    "defaultValue": "(args: Page) => ({\n  component: Page,\n  props: args,\n})"
-                }
-            ],
-            "stories/Header.stories.ts": [
-                {
-                    "name": "LoggedIn",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Header.stories.ts",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "LoggedOut",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Header.stories.ts",
-                    "type": "",
-                    "defaultValue": "Template.bind({})"
-                },
-                {
-                    "name": "Template",
-                    "ctype": "miscellaneous",
-                    "subtype": "variable",
-                    "file": "stories/Header.stories.ts",
-                    "type": "Story<Header>",
-                    "defaultValue": "(args: Header) => ({\n  component: Header,\n  props: args,\n})"
-                }
-            ],
-            "projects/exampleApp/src/state/state.actions.ts": [
+            "projects/exampleApp/src/state/people.actions.ts": [
                 {
                     "name": "setData",
                     "ctype": "miscellaneous",
                     "subtype": "variable",
-                    "file": "projects/exampleApp/src/state/state.actions.ts",
+                    "file": "projects/exampleApp/src/state/people.actions.ts",
                     "type": "",
                     "defaultValue": "createAction('[Global State] set', props<{data: PersonType[]}>())"
+                }
+            ],
+            "projects/exampleApp/src/state/loading.actions.ts": [
+                {
+                    "name": "setLoading",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "projects/exampleApp/src/state/loading.actions.ts",
+                    "type": "",
+                    "defaultValue": "createAction('[Loading State] set', props<{loading: boolean}>())"
                 }
             ]
         },
         "groupedFunctions": {
-            "projects/exampleApp/src/state/state.reducer.ts": [
+            "projects/exampleApp/src/state/loading.reducer.ts": [
                 {
-                    "name": "stateReducer",
-                    "file": "projects/exampleApp/src/state/state.reducer.ts",
+                    "name": "loadingReducer",
+                    "file": "projects/exampleApp/src/state/loading.reducer.ts",
                     "ctype": "miscellaneous",
                     "subtype": "function",
                     "description": "",
@@ -2034,6 +1864,65 @@
                             "type": ""
                         }
                     ],
+                    "returnType": "boolean",
+                    "jsdoctags": [
+                        {
+                            "name": "state",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "action",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "projects/exampleApp/src/factories/queryService.factory.ts": [
+                {
+                    "name": "queryServiceFactory",
+                    "file": "projects/exampleApp/src/factories/queryService.factory.ts",
+                    "ctype": "miscellaneous",
+                    "subtype": "function",
+                    "description": "",
+                    "args": [
+                        {
+                            "name": "queryFilterService"
+                        }
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "queryFilterService",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "projects/exampleApp/src/state/people.reducer.ts": [
+                {
+                    "name": "stateReducer",
+                    "file": "projects/exampleApp/src/state/people.reducer.ts",
+                    "ctype": "miscellaneous",
+                    "subtype": "function",
+                    "description": "",
+                    "args": [
+                        {
+                            "name": "state",
+                            "type": ""
+                        },
+                        {
+                            "name": "action",
+                            "type": ""
+                        }
+                    ],
+                    "returnType": "any[]",
                     "jsdoctags": [
                         {
                             "name": "state",
@@ -2114,7 +2003,7 @@
         ]
     },
     "coverage": {
-        "count": 1,
+        "count": 0,
         "status": "low",
         "files": [
             {
@@ -2152,7 +2041,7 @@
                 "linktype": "component",
                 "name": "AppComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/6",
+                "coverageCount": "0/8",
                 "status": "low"
             },
             {
@@ -2186,6 +2075,15 @@
                 "status": "low"
             },
             {
+                "filePath": "projects/exampleApp/src/factories/queryService.factory.ts",
+                "type": "function",
+                "linksubtype": "function",
+                "name": "queryServiceFactory",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
                 "filePath": "projects/exampleApp/src/services/people.service.ts",
                 "type": "injectable",
                 "linktype": "injectable",
@@ -2195,7 +2093,55 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/exampleApp/src/state/state.actions.ts",
+                "filePath": "projects/exampleApp/src/services/queryFilter.service.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "QueryFilterService",
+                "coveragePercent": 0,
+                "coverageCount": "0/7",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/exampleApp/src/state/loading.actions.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "setLoading",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/exampleApp/src/state/loading.reducer.ts",
+                "type": "function",
+                "linksubtype": "function",
+                "name": "loadingReducer",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/exampleApp/src/state/loading.reducer.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "initialState",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/exampleApp/src/state/loading.reducer.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "reducer",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "projects/exampleApp/src/state/people.actions.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
@@ -2205,7 +2151,7 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/exampleApp/src/state/state.reducer.ts",
+                "filePath": "projects/exampleApp/src/state/people.reducer.ts",
                 "type": "function",
                 "linksubtype": "function",
                 "name": "stateReducer",
@@ -2214,21 +2160,21 @@
                 "status": "low"
             },
             {
-                "filePath": "projects/exampleApp/src/state/state.reducer.ts",
+                "filePath": "projects/exampleApp/src/state/people.reducer.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
-                "name": "_reducer",
+                "name": "initialPeopleState",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"
             },
             {
-                "filePath": "projects/exampleApp/src/state/state.reducer.ts",
+                "filePath": "projects/exampleApp/src/state/people.reducer.ts",
                 "type": "variable",
                 "linktype": "miscellaneous",
                 "linksubtype": "variable",
-                "name": "initialState",
+                "name": "reducer",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
                 "status": "low"
@@ -2313,7 +2259,7 @@
                 "linktype": "component",
                 "name": "NgTableComponent",
                 "coveragePercent": 0,
-                "coverageCount": "0/26",
+                "coverageCount": "0/28",
                 "status": "low"
             },
             {
@@ -2332,7 +2278,7 @@
                 "linktype": "injectable",
                 "name": "TableStore",
                 "coveragePercent": 0,
-                "coverageCount": "0/16",
+                "coverageCount": "0/17",
                 "status": "low"
             },
             {
@@ -2362,134 +2308,6 @@
                 "name": "require",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Large",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Primary",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Secondary",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Small",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Button.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Template",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Header.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "LoggedIn",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Header.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "LoggedOut",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Header.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Template",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Page.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "LoggedIn",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Page.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "LoggedOut",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/Page.stories.ts",
-                "type": "variable",
-                "linktype": "miscellaneous",
-                "linksubtype": "variable",
-                "name": "Template",
-                "coveragePercent": 0,
-                "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/button.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "ButtonComponent",
-                "coveragePercent": 83,
-                "coverageCount": "5/6",
-                "status": "very-good"
-            },
-            {
-                "filePath": "stories/header.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "HeaderComponent",
-                "coveragePercent": 0,
-                "coverageCount": "0/5",
                 "status": "low"
             },
             {
@@ -2530,15 +2348,6 @@
                 "name": "Template",
                 "coveragePercent": 0,
                 "coverageCount": "0/1",
-                "status": "low"
-            },
-            {
-                "filePath": "stories/page.component.ts",
-                "type": "component",
-                "linktype": "component",
-                "name": "PageComponent",
-                "coveragePercent": 0,
-                "coverageCount": "0/5",
                 "status": "low"
             }
         ]

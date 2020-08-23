@@ -27,7 +27,7 @@
   &_dragger {
     width: 1px;
     height: 100%;
-    background-color: black;
+    border-right: 1px solid rgba(224, 224, 224, 1);
     cursor: col-resize;
     margin-left: 24px;
   }

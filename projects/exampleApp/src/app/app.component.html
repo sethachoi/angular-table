@@ -2,18 +2,20 @@
   <div class="inner-content" [class.loading]="(loading$ | async)" [class.loaded]="(loading$ | async) === false">
     <div class="inner-content"></div>
   </div>
-    <div class="table-container">
-      <div class="button-container">
-        <button class="fetch-button"
-          (click)="fetchData()">Simulate Data Fetch</button>
-      </div>
-      <div>
+  <div class="table-container">
+    <div class="button-container">
+      <button class="fetch-button"
+        [class.loading]="(loading$ | async)"
+        (click)="fetchData()">Simulate Data Fetch</button>
+    </div>
+    <div class="table-component-container">
       <ui-ng-table
         [primaryKey]="'id'"
         [loading]="(loading$ | async)"
         [maxHeight]="350"
         [items]="(people$ | async)"
         [colDefs]="colDefs"
+        [initialFilters]="sortFilters"
         (filterUpdate)="receiveFilters($event)"
         ></ui-ng-table>
     </div>

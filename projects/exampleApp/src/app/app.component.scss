@@ -5,9 +5,9 @@
 }
 
 @keyframes animatedBackground2 {
-	0% { background-position: 20% 0; }
-  50% { background-position: 100% 0; }
-  100% { background-position: 20% 0; }
+	0% { background-position: 75% 0; }
+  50% { background-position: 0 0; }
+  100% { background-position: 25% 0; }
 }
 
 .content {
@@ -30,7 +30,10 @@
     z-index: -1;
 
     .inner-content {
-      animation: animatedBackground 20s linear infinite;
+      background-position-x: 100%;
+      animation: animatedBackground2 20s linear infinite;
+      filter: hue-rotate(-30deg);
+      z-index: -2;
     }
 
     &.loaded {
@@ -38,7 +41,7 @@
       transition: opacity 2s ease-out;
       animation-play-state: paused;
       .inner-content {
-        opacity: 0.75;
+        opacity: 0.6;
         transition: opacity 2s ease-out;
         animation-play-state: paused;
       }
@@ -57,29 +60,57 @@
 }
 
 .table-container {
-  height: 550px;
-  width: 1280px;
+  min-width: 1280px;
+  padding: 16px;
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  align-items: center;
-  background-color: white;
-  border-radius: 3px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  background-color: #fafafa;
+  border-radius: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow:
+    0 3px 6px rgba(0,0,0,0.16),
+    0 3px 6px rgba(0,0,0,0.23);
 }
 
-.button-container {
-  width: 1174px;
+.table-component-container {
+  z-index: 2;
 }
 
 .fetch-button {
   background-color: #0099ff;
   padding: 8px 16px;
   border: none;
-  border-radius: 3px;
+  border-radius: 4px;
   color: white;
   font-family: sans-serif;
+  top: 26px;
+  box-shadow:
+    rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,
+    rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
   cursor: pointer;
+  opacity: 1;
+  transform: scale(1.0);
+  transition: transform 0.2s ease-in;
+  margin-bottom: 8px;
+  &:after {
+    border-radius: 4px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow:
+      rgba(0, 0, 0, 0.2) 0px 3px 1px -2px,
+      rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
+      rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in;
+    content: '';
+  }
 
   &:focus {
     outline: none;
@@ -87,9 +118,37 @@
 
   &:active {
     opacity: 0.5;
+    transform: scale(0.9);
+    transition: all 0.2s ease-out;
+  }
+  &:before {
+    width: 30px;
+    height: 30px;
+    z-index: 1;
+    top: 0;
+    left: 25%;
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    border-radius: 90px;
+    position: absolute;
+    background-color: #0099ff;
+    transition: all 0.3s ease-in;
+    content: '';
+  }
+  &.loading:before {
+    transform: scale(60);
+    opacity: 0.75;
+    transition: all 0.3s ease;
+    animation: breathing 2s ease-out;
   }
 
-  &:hover {
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  &:hover:after {
+    opacity: 1;
+    transition: opacity 0.2s ease-out;
   }
+}
+
+@keyframes breathing {
+  0% { left: 25% }
+  100% { left: 0 }
 }

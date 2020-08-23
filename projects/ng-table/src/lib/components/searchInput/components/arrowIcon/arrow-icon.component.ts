@@ -2,8 +2,7 @@ import { Component, Input } from '@angular/core'
 
 @Component({
   selector: 'ui-arrow-icon',
-  templateUrl: './arrow-icon.component.html',
-  styleUrls: ['./arrow-icon.component.scss']
+  templateUrl: './arrow-icon.component.html'
 })
 export class ArrowIconComponent {
   @Input()

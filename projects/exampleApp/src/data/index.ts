@@ -2,6 +2,11 @@ import { ColType } from 'ng-table'
 
 export const colDefs: ColType[] = [
   {
+    key: 'id',
+    label: 'User Id',
+    type: 'number'
+  },
+  {
     key: 'firstName',
     label: 'First Name',
     type: 'string'
@@ -10,11 +15,6 @@ export const colDefs: ColType[] = [
     key: 'lastName',
     label: 'Last Name',
     type: 'string'
-  },
-  {
-    key: 'id',
-    label: 'User Id',
-    type: 'number'
   },
   {
     key: 'phone',
