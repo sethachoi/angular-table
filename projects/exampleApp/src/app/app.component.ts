@@ -1,10 +1,10 @@
-import { Component } from '@angular/core'
+import { Component, HostListener } from '@angular/core'
 import { Store, select } from '@ngrx/store'
 import { Observable } from 'rxjs'
 import { SortType } from 'ng-table'
 import { PeopleService, QueryFilterService } from '../services'
 import { PersonType } from '../types'
-import { colDefs } from '../data'
+import { colDefs, EGG_KEYS } from '../data'
 
 @Component({
   selector: 'app-root',
@@ -16,6 +16,20 @@ export class AppComponent {
   loading$: Observable<boolean>
   sortFilters: SortType[] = []
   colDefs = colDefs
+
+  // ????
+  keyBuffer: string[] = []
+  @HostListener('window:keyup', ['$event'])
+  keyEvent(event: KeyboardEvent): void {
+    const currentKeysLength = this.keyBuffer.length
+    if (currentKeysLength !== EGG_KEYS.length) {
+      if (EGG_KEYS[currentKeysLength] === event.key) {
+        this.keyBuffer = [...this.keyBuffer, event.key]
+      } else {
+        this.keyBuffer = []
+      }
+    }
+  }
 
   constructor(
     private peopleService: PeopleService,
@@ -41,4 +55,8 @@ export class AppComponent {
   fetchData = () => {
     this.peopleService.fetchPeople()
   }
+
+  // ??????
+  eggSuccess = () =>
+    this.keyBuffer.length === EGG_KEYS.length
 }

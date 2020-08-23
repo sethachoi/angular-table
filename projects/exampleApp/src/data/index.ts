@@ -47,3 +47,16 @@ export const colDefs: ColType[] = [
     type: 'number'
   }
 ]
+
+export const EGG_KEYS = [
+  'ArrowUp',
+  'ArrowUp',
+  'ArrowDown',
+  'ArrowDown',
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowLeft',
+  'ArrowRight',
+  'b',
+  'a'
+]

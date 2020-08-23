@@ -19,6 +19,14 @@
         (filterUpdate)="receiveFilters($event)"
         ></ui-ng-table>
     </div>
+  </div>
+  <div class="easter-egg" [class.active]="eggSuccess()">
+    <div class="egg1"></div>
+    <div class="egg2"></div>
+    <div class="egg3"></div>
+    <div class="egg4"></div>
+    <div class="egg5"></div>
+  </div>
 </div>
 
 <router-outlet></router-outlet>
